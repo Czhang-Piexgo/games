@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>菠萝的恐龙游戏 🦕</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brown:#8B5E3C;--brown2:#5D3A1A;--brown3:#D4A96A;
+  --sand:#F5DEB3;--sand2:#FFF8E7;--sand3:#E8C97A;
+  --dino:#4CAF50;--dino2:#2E7D32;--dino3:#A5D6A7;
+  --sky:#87CEEB;--sky2:#C5E8F7;
+  --dark:#1a0e00;--shadow:rgba(139,94,60,.3);
+  --red:#EF5350;--yellow:#FFD700;--blue:#42A5F5;--purple:#AB47BC;--orange:#FF9800;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100vh;}
+body{font-family:'Nunito',sans-serif;background:var(--sand2);overflow-x:hidden;user-select:none;}
+
+/* BG */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,var(--sky) 0%,var(--sky2) 40%,#D4A96A 40%,#8B6340 100%);}
+.cloud{position:fixed;background:white;border-radius:50px;opacity:.88;pointer-events:none;z-index:1;}
+.cloud::before,.cloud::after{content:'';position:absolute;background:white;border-radius:50%;}
+.cl1{width:100px;height:32px;top:44px;left:60px;animation:cl 22s linear infinite;}
+.cl1::before{width:44px;height:44px;top:-20px;left:16px;}
+.cl1::after{width:30px;height:30px;top:-14px;left:50px;}
+.cl2{width:75px;height:25px;top:80px;left:-80px;animation:cl 30s linear infinite 9s;}
+.cl2::before{width:34px;height:34px;top:-15px;left:11px;}
+.cl2::after{width:22px;height:22px;top:-10px;left:34px;}
+@keyframes cl{from{transform:translateX(-200px)}to{transform:translateX(110vw)}}
+.sun{position:fixed;top:16px;right:44px;width:56px;height:56px;
+  background:radial-gradient(circle,#FFD700,#FFA500);border-radius:50%;
+  box-shadow:0 0 0 10px rgba(255,215,0,.2),0 0 0 20px rgba(255,215,0,.1);
+  z-index:2;pointer-events:none;animation:sp 4s ease-in-out infinite;}
+@keyframes sp{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.ground{position:fixed;bottom:0;left:0;right:0;height:50px;
+  background:linear-gradient(#C4A47C,#8B6340);z-index:2;pointer-events:none;}
+.ground::before{content:'🌿🌾🌿🌾🌿🌾🌿🌾🌿🌾🌿🌾🌿🌾🌿🌾';
+  position:absolute;top:-12px;left:0;right:0;font-size:1.1rem;letter-spacing:2px;}
+.music-btn{position:fixed;top:12px;left:12px;z-index:30;font-size:1.3rem;
+  background:white;border:3px solid var(--brown);border-radius:50%;
+  width:42px;height:42px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 4px 0 var(--brown2);touch-action:manipulation;}
+.music-btn.off{opacity:.5;filter:grayscale(1);}
+
+/* APP */
+#app{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:12px 12px 70px;}
+.screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:480px;}
+.screen.active{display:flex;}
+
+/* ── HOME ── */
+.mascot{font-size:5rem;animation:bounce 2s ease-in-out infinite;filter:drop-shadow(0 8px 16px rgba(0,0,0,.2));margin:8px 0 2px;}
+@keyframes bounce{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(3deg)}}
+.gtitle{font-family:'Boogaloo',cursive;font-size:clamp(2rem,7vw,3rem);color:var(--brown2);
+  text-shadow:3px 3px 0 var(--sand3);letter-spacing:2px;text-align:center;line-height:1.1;margin-bottom:2px;}
+.gtitle span{color:var(--dino2);}
+.gtitle-sub{font-size:.95rem;font-weight:900;color:var(--brown);text-align:center;margin-bottom:14px;}
+.pname{font-family:'Boogaloo',cursive;font-size:1.6rem;color:white;
+  background:var(--brown2);padding:5px 20px;border-radius:50px;margin-bottom:14px;
+  box-shadow:0 4px 0 rgba(0,0,0,.2);}
+.game-cards{display:flex;flex-direction:column;gap:12px;width:100%;}
+.gcard-home{border-radius:20px;padding:16px 18px;cursor:pointer;
+  display:flex;align-items:center;gap:14px;
+  border:3px solid var(--gc);background:var(--gb);
+  box-shadow:0 6px 0 var(--gs),0 8px 20px var(--shadow);
+  transition:transform .18s,box-shadow .18s;position:relative;overflow:hidden;touch-action:manipulation;}
+.gcard-home::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.3),transparent 60%);pointer-events:none;}
+.gcard-home:hover{transform:translateY(-3px);box-shadow:0 9px 0 var(--gs);}
+.gcard-home:active{transform:translateY(2px);box-shadow:0 3px 0 var(--gs);}
+.gh1{--gc:#FFD700;--gb:#FFFDE7;--gs:#F9A825;}
+.gh2{--gc:#EF5350;--gb:#FFEBEE;--gs:#B71C1C;}
+.gh3{--gc:#42A5F5;--gb:#E3F2FD;--gs:#1565C0;}
+.ghicon{font-size:2.8rem;flex-shrink:0;}
+.ghinfo{flex:1;text-align:left;}
+.ghname{font-family:'Boogaloo',cursive;font-size:1.2rem;color:var(--dark);}
+.ghdesc{font-size:.8rem;font-weight:900;color:rgba(26,14,0,.5);margin-top:2px;}
+.ghbadge{font-family:'Boogaloo',cursive;font-size:.72rem;
+  background:var(--gc);color:var(--dark);padding:3px 10px;border-radius:20px;flex-shrink:0;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;gap:8px;width:100%;margin-bottom:10px;}
+.backbtn{font-family:'Boogaloo',cursive;font-size:.85rem;border:3px solid var(--brown2);
+  background:var(--sand);color:var(--brown2);border-radius:12px;padding:7px 12px;
+  cursor:pointer;box-shadow:0 4px 0 var(--brown2);touch-action:manipulation;}
+.backbtn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--brown2);}
+.mtag{font-family:'Boogaloo',cursive;font-size:.9rem;color:var(--brown2);
+  background:rgba(139,94,60,.1);padding:5px 12px;border-radius:50px;flex:1;text-align:center;
+  border:2px solid rgba(139,94,60,.25);}
+
+/* SCOREBAR */
+.sbar{display:flex;gap:10px;align-items:center;justify-content:center;
+  background:white;border:3px solid var(--brown);border-radius:50px;
+  padding:7px 18px;margin-bottom:10px;box-shadow:0 4px 0 var(--brown2);}
+.si{display:flex;flex-direction:column;align-items:center;}
+.sl{font-size:.56rem;color:rgba(26,14,0,.4);letter-spacing:1px;text-transform:uppercase;font-weight:900;}
+.sv{font-family:'Boogaloo',cursive;font-size:1.3rem;color:var(--brown2);}
+.sdiv{width:2px;height:24px;background:rgba(139,94,60,.2);border-radius:2px;}
+
+/* CHAR BUBBLE */
+.chararea{display:flex;flex-direction:column;align-items:center;margin-bottom:10px;}
+.charface{font-size:2.8rem;animation:bounce 2s ease-in-out infinite;}
+.bubble{background:white;border:3px solid var(--brown);border-radius:18px;
+  padding:6px 14px;font-size:.85rem;font-weight:900;color:var(--dark);text-align:center;
+  margin-top:6px;max-width:300px;box-shadow:0 4px 0 var(--brown2);position:relative;}
+.bubble::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  border:9px solid transparent;border-bottom-color:var(--brown);}
+.bubble::after{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  border:7px solid transparent;border-bottom-color:white;}
+
+/* ════════════════════════════
+   GAME 1: TREASURE MAP
+════════════════════════════ */
+.map-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.clue-box{background:white;border:3px solid var(--brown);border-radius:18px;padding:12px 16px;
+  width:100%;box-shadow:0 5px 0 var(--brown2),0 8px 20px var(--shadow);text-align:center;position:relative;overflow:hidden;}
+.clue-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--yellow),var(--orange),var(--red));}
+.clue-title{font-family:'Boogaloo',cursive;font-size:.9rem;color:rgba(26,14,0,.4);letter-spacing:2px;margin-bottom:6px;}
+.clue-emoji{font-size:3.5rem;margin-bottom:6px;animation:bounce 1.5s ease-in-out infinite;}
+.clue-text{font-family:'Boogaloo',cursive;font-size:1.1rem;color:var(--brown2);margin-bottom:3px;}
+.clue-cn{font-size:.88rem;font-weight:900;color:var(--brown);margin-bottom:8px;}
+.clue-snd{font-family:'Boogaloo',cursive;font-size:.8rem;background:var(--sand3);
+  border:2px solid var(--brown);color:var(--brown2);border-radius:50px;
+  padding:5px 14px;cursor:pointer;box-shadow:0 3px 0 var(--brown2);touch-action:manipulation;}
+
+/* MAP GRID */
+.map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;}
+.map-cell{aspect-ratio:1;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(1.8rem,7vw,2.8rem);cursor:pointer;border:3px solid var(--mc,rgba(139,94,60,.3));
+  background:var(--mb,var(--sand2));box-shadow:0 5px 0 var(--ms,rgba(139,94,60,.2));
+  transition:transform .15s,box-shadow .15s;touch-action:manipulation;position:relative;overflow:hidden;}
+.map-cell::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.35),transparent 60%);pointer-events:none;}
+.map-cell:hover:not(.revealed){transform:scale(1.05);}
+.map-cell:active:not(.revealed){transform:scale(.95);}
+.map-cell.revealed{cursor:default;animation:revpop .4s cubic-bezier(.34,1.56,.64,1);}
+.map-cell.correct-cell{background:#E8F5E9!important;border-color:#4CAF50!important;box-shadow:0 5px 0 #2E7D32!important,0 0 20px rgba(76,175,80,.5)!important;}
+.map-cell.wrong-cell{background:#FFEBEE!important;border-color:var(--red)!important;animation:wsh .4s;opacity:.6;}
+@keyframes revpop{from{transform:scale(0) rotate(-10deg)}to{transform:scale(1) rotate(0)}}
+.map-steps{display:flex;gap:5px;justify-content:center;}
+.mstep{width:22px;height:22px;border-radius:50%;background:rgba(139,94,60,.15);
+  border:2px solid rgba(139,94,60,.2);display:flex;align-items:center;justify-content:center;font-size:.6rem;transition:all .4s;}
+.mstep.done{background:radial-gradient(circle at 35% 35%,#FFD700,#F9A825);border-color:var(--yellow);}
+.mstep.cur{background:radial-gradient(circle at 35% 35%,#4CAF50,#2E7D32);border-color:var(--dino2);animation:mscur 1.2s ease-in-out infinite;}
+@keyframes mscur{0%,100%{box-shadow:0 0 8px rgba(76,175,80,.4)}50%{box-shadow:0 0 18px rgba(76,175,80,.7)}}
+
+/* ════════════════════════════
+   GAME 2: WHACK-A-DINO
+════════════════════════════ */
+.wak-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.wak-info{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+.wak-pill{font-family:'Boogaloo',cursive;font-size:1rem;color:var(--brown2);
+  background:white;border:2px solid var(--brown3);border-radius:50px;padding:5px 14px;
+  box-shadow:0 3px 0 var(--brown3);}
+.wak-timer{font-family:'Boogaloo',cursive;font-size:2rem;color:var(--red);
+  text-shadow:2px 2px 0 rgba(239,83,80,.3);}
+.wak-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;}
+.hole{aspect-ratio:1;border-radius:50%;background:linear-gradient(180deg,#8B5E3C,#5D3A1A);
+  border:4px solid var(--brown2);display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;box-shadow:inset 0 4px 12px rgba(0,0,0,.4),0 4px 0 rgba(0,0,0,.3);}
+.hole-inner{position:absolute;bottom:-100%;width:80%;height:80%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(1.8rem,7vw,2.8rem);cursor:pointer;
+  transition:bottom .15s cubic-bezier(.34,1.56,.64,1);
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.3));touch-action:manipulation;
+  border-radius:50%;background:rgba(255,248,230,.1);}
+.hole-inner.up{bottom:5%;}
+.hole-inner.whacked{bottom:-100%;transition:bottom .08s ease-in;}
+.wak-start-btn{font-family:'Boogaloo',cursive;font-size:1.2rem;
+  background:var(--dino3);border:3px solid var(--dino2);color:var(--dino2);
+  border-radius:16px;padding:12px 28px;cursor:pointer;
+  box-shadow:0 5px 0 var(--dino2);transition:all .18s;touch-action:manipulation;}
+.wak-start-btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--dino2);}
+.wak-start-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--dino2);}
+.wak-miss{position:absolute;font-family:'Boogaloo',cursive;font-size:1.2rem;
+  color:var(--red);animation:floatup .6s ease-out forwards;pointer-events:none;z-index:10;}
+.wak-hit{position:absolute;font-family:'Boogaloo',cursive;font-size:1.2rem;
+  color:var(--dino2);animation:floatup .6s ease-out forwards;pointer-events:none;z-index:10;}
+@keyframes floatup{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-50px);opacity:0}}
+/* Timer bar */
+.timer-bar-wrap{width:100%;background:rgba(139,94,60,.15);border-radius:50px;height:12px;overflow:hidden;border:2px solid var(--brown3);}
+.timer-bar{height:100%;background:linear-gradient(90deg,var(--dino),var(--yellow),var(--red));border-radius:50px;transition:width .1s linear;}
+
+/* ════════════════════════════
+   GAME 3: MEMORY CARDS
+════════════════════════════ */
+.mem-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.mem-info{font-family:'Boogaloo',cursive;font-size:.95rem;color:var(--brown2);text-align:center;}
+.mem-grid{display:grid;gap:7px;width:100%;max-width:360px;margin:0 auto;}
+.mem-card{aspect-ratio:1;border-radius:14px;cursor:pointer;touch-action:manipulation;
+  position:relative;transform-style:preserve-3d;transition:transform .4s;border:3px solid var(--brown);}
+.mem-card.flipped,.mem-card.matched{transform:rotateY(180deg);}
+.mem-card .card-front,.mem-card .card-back{
+  position:absolute;inset:0;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.card-front{background:linear-gradient(135deg,var(--brown3),var(--brown));font-size:1.6rem;}
+.card-back{background:white;border:2px solid var(--dino3);transform:rotateY(180deg);
+  font-size:clamp(1.4rem,5vw,2rem);flex-direction:column;gap:2px;}
+.card-back-cn{font-family:'Boogaloo',cursive;font-size:.55rem;color:var(--brown);line-height:1;}
+.mem-card.matched .card-back{background:#E8F5E9;border-color:#4CAF50;box-shadow:0 0 14px rgba(76,175,80,.4);}
+.mem-card:not(.flipped):not(.matched):hover{transform:scale(1.04);}
+.mem-start-btn{font-family:'Boogaloo',cursive;font-size:1.1rem;
+  background:var(--dino3);border:3px solid var(--dino2);color:var(--dino2);
+  border-radius:14px;padding:10px 24px;cursor:pointer;
+  box-shadow:0 5px 0 var(--dino2);transition:all .18s;touch-action:manipulation;}
+.mem-start-btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--dino2);}
+.diff-row{display:flex;gap:8px;justify-content:center;margin-bottom:4px;}
+.diff-btn{font-family:'Boogaloo',cursive;font-size:.85rem;border-radius:50px;
+  padding:6px 16px;cursor:pointer;border:2px solid var(--dc);background:rgba(255,255,255,.5);
+  color:var(--dc);transition:all .2s;touch-action:manipulation;}
+.diff-btn.active{background:var(--dc);color:white;}
+
+/* FEEDBACK */
+.fbov{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  z-index:50;pointer-events:none;opacity:0;transition:opacity .22s;}
+.fbov.show{opacity:1;}
+.fbmsg{font-family:'Boogaloo',cursive;font-size:clamp(1.8rem,7vw,4rem);text-align:center;
+  animation:zpop .4s cubic-bezier(.34,1.56,.64,1);line-height:1.2;padding:0 16px;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.2));}
+.fbmsg.ok{color:#2E7D32;}
+.fbmsg.no{color:#C62828;}
+
+/* PARTICLES */
+.pstar{position:fixed;pointer-events:none;z-index:49;font-size:1.3rem;
+  animation:pfly var(--pd) ease-out forwards var(--pdd);}
+@keyframes pfly{0%{transform:translate(0,0) scale(1) rotate(0);opacity:1}100%{transform:translate(var(--px),var(--py)) scale(0) rotate(var(--pr));opacity:0}}
+@keyframes zpop{from{transform:scale(0) rotate(-10deg)}to{transform:scale(1) rotate(0)}}
+@keyframes wsh{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* COMPLETE */
+.wc{position:fixed;inset:0;background:rgba(255,248,230,.93);display:flex;align-items:center;
+  justify-content:center;z-index:100;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .4s;}
+.wc.show{opacity:1;pointer-events:all;}
+.wcc{background:white;border:4px solid var(--brown);border-radius:24px;padding:28px;text-align:center;
+  max-width:360px;width:90%;box-shadow:0 8px 0 var(--brown2),0 16px 36px var(--shadow);
+  animation:zpop .5s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;}
+.wcc::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--dino),var(--yellow),var(--red),var(--purple));}
+.wc-icon{font-size:4rem;display:block;animation:bounce 2s ease-in-out infinite;margin-bottom:6px;}
+.wc-title{font-family:'Boogaloo',cursive;font-size:1.7rem;color:var(--brown2);margin-bottom:2px;}
+.wc-cn{font-size:.9rem;font-weight:900;color:var(--brown);margin-bottom:8px;}
+.wc-score{font-family:'Boogaloo',cursive;font-size:2rem;color:var(--brown2);margin-bottom:4px;}
+.wc-stars{font-size:1.9rem;margin-bottom:14px;letter-spacing:4px;}
+.wc-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.wcbtn{font-family:'Boogaloo',cursive;font-size:.9rem;border-radius:12px;
+  padding:10px 16px;cursor:pointer;border:3px solid;touch-action:manipulation;transition:all .2s;}
+.wcbtn.pri{border-color:var(--dino2);background:var(--dino3);color:var(--dino2);box-shadow:0 4px 0 var(--dino2);}
+.wcbtn.pri:hover{transform:translateY(-2px);}
+.wcbtn.sec{border-color:var(--brown2);background:var(--sand);color:var(--brown2);box-shadow:0 4px 0 var(--brown2);}
+.wcbtn.sec:hover{transform:translateY(-2px);}
+
+/* COUNTDOWN */
+.cdov{position:fixed;inset:0;background:rgba(255,248,230,.9);display:none;align-items:center;
+  justify-content:center;z-index:200;pointer-events:none;}
+.cdov.show{display:flex;}
+.cdnum{font-family:'Boogaloo',cursive;font-size:clamp(5rem,18vw,9rem);color:var(--brown2);
+  text-shadow:4px 4px 0 var(--sand3);}
+.cdanim{animation:cdpop .8s cubic-bezier(.34,1.56,.64,1);}
+@keyframes cdpop{0%{transform:scale(0) rotate(-15deg);opacity:0}65%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="sun"></div>
+<div class="cloud cl1"></div>
+<div class="cloud cl2"></div>
+<div class="ground"></div>
+<button class="music-btn" id="mbtn" onclick="toggleMusic()">🎵</button>
+<div class="fbov" id="fbov"><div class="fbmsg" id="fbmsg"></div></div>
+<div class="wc" id="wc">
+  <div class="wcc">
+    <span class="wc-icon" id="wcicon">🏆</span>
+    <div class="wc-title" id="wctitle">太棒了！</div>
+    <div class="wc-cn" id="wccn">菠萝赢了！</div>
+    <div class="wc-score" id="wcscore"></div>
+    <div class="wc-stars" id="wcstars"></div>
+    <div class="wc-btns">
+      <button class="wcbtn pri" id="wcplay">再玩！🦕</button>
+      <button class="wcbtn sec" onclick="goHome()">🏠 首页</button>
+    </div>
+  </div>
+</div>
+<div class="cdov" id="cdov"><div class="cdnum" id="cdnum">3</div></div>
+
+<div id="app">
+  <!-- HOME -->
+  <div class="screen active" id="home-screen">
+    <div class="mascot">🦕</div>
+    <div class="gtitle">菠萝的 <span>恐龙</span> 游乐场！</div>
+    <div class="gtitle-sub">Boluo's Dino Game Zone 🦴🎮</div>
+    <div class="pname">你好 菠萝！🍍🦕</div>
+    <div class="game-cards">
+      <div class="gcard-home gh1" onclick="startMap()">
+        <div class="ghicon">🗺️</div>
+        <div class="ghinfo">
+          <div class="ghname">寻宝地图 Treasure Map</div>
+          <div class="ghdesc">跟着线索找到化石！Follow clues to find the fossil!</div>
+        </div>
+        <div class="ghbadge">开始！</div>
+      </div>
+      <div class="gcard-home gh2" onclick="startWak()">
+        <div class="ghicon">🎪</div>
+        <div class="ghinfo">
+          <div class="ghname">打恐龙 Whack-a-Dino!</div>
+          <div class="ghdesc">快速拍打弹出的恐龙！Tap the dinos before they hide!</div>
+        </div>
+        <div class="ghbadge">开始！</div>
+      </div>
+      <div class="gcard-home gh3" onclick="startMem()">
+        <div class="ghicon">🧠</div>
+        <div class="ghinfo">
+          <div class="ghname">翻牌配对 Memory Cards</div>
+          <div class="ghdesc">找到相同的恐龙！Find the matching dino pairs!</div>
+        </div>
+        <div class="ghbadge">开始！</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP SCREEN -->
+  <div class="screen" id="map-screen">
+    <div class="topbar">
+      <button class="backbtn" onclick="goHome()">← 首页</button>
+      <div class="mtag">🗺️ 寻宝地图 Treasure Map</div>
+    </div>
+    <div class="sbar">
+      <div class="si"><div class="sl">得分</div><div class="sv" id="map-score">0</div></div>
+      <div class="sdiv"></div>
+      <div class="si"><div class="sl">关卡</div><div class="sv" id="map-round">1/8</div></div>
+      <div class="sdiv"></div>
+      <div class="si"><div class="sl">🔥连击</div><div class="sv" id="map-streak">0</div></div>
+    </div>
+    <div class="chararea">
+      <div class="charface">🦕</div>
+      <div class="bubble" id="map-bubble">跟着线索找化石！🦴</div>
+    </div>
+    <div class="map-wrap">
+      <div class="map-steps" id="map-steps"></div>
+      <div class="clue-box">
+        <div class="clue-title">🔍 线索 CLUE</div>
+        <div class="clue-emoji" id="clue-emoji">🌋</div>
+        <div class="clue-text" id="clue-text">找火山旁边的化石！</div>
+        <div class="clue-cn" id="clue-cn">Find the fossil near the volcano!</div>
+        <button class="clue-snd" onclick="speakClue()">🔊 再说一次</button>
+      </div>
+      <div class="map-grid" id="map-grid"></div>
+    </div>
+  </div>
+
+  <!-- WHACK SCREEN -->
+  <div class="screen" id="wak-screen">
+    <div class="topbar">
+      <button class="backbtn" onclick="goHome()">← 首页</button>
+      <div class="mtag">🎪 打恐龙 Whack-a-Dino</div>
+    </div>
+    <div class="sbar">
+      <div class="si"><div class="sl">得分</div><div class="sv" id="wak-score">0</div></div>
+      <div class="sdiv"></div>
+      <div class="si"><div class="sl">命中</div><div class="sv" id="wak-hits">0</div></div>
+      <div class="sdiv"></div>
+      <div class="si"><div class="sl">⏱️剩余</div><div class="sv wak-timer" id="wak-time">30</div></div>
+    </div>
+    <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+    <div class="chararea" style="margin-top:8px">
+      <div class="charface">🎪</div>
+      <div class="bubble" id="wak-bubble">快拍打弹出的恐龙！🦕</div>
+    </div>
+    <div class="wak-wrap">
+      <div class="wak-grid" id="wak-grid"></div>
+      <button class="wak-start-btn" id="wak-start" onclick="startWakGame()">🦕 开始游戏！Start!</button>
+    </div>
+  </div>
+
+  <!-- MEMORY SCREEN -->
+  <div class="screen" id="mem-screen">
+    <div class="topbar">
+      <button class="backbtn" onclick="goHome()">← 首页</button>
+      <div class="mtag">🧠 翻牌配对 Memory</div>
+    </div>
+    <div class="sbar">
+      <div class="si"><div class="sl">得分</div><div class="sv" id="mem-score">0</div></div>
+      <div class="sdiv"></div>
+      <div class="si"><div class="sl">翻牌次数</div><div class="sv" id="mem-flips">0</div></div>
+      <div class="sdiv"></div>
+      <div class="si"><div class="sl">✅配对</div><div class="sv" id="mem-pairs">0</div></div>
+    </div>
+    <div class="chararea">
+      <div class="charface">🧠</div>
+      <div class="bubble" id="mem-bubble">找到相同的恐龙！🦕</div>
+    </div>
+    <div class="mem-wrap">
+      <div class="diff-row">
+        <button class="diff-btn active" style="--dc:#4CAF50" onclick="setMemDiff(2,this)">简单 4对</button>
+        <button class="diff-btn" style="--dc:#FF9800" onclick="setMemDiff(3,this)">中等 6对</button>
+        <button class="diff-btn" style="--dc:#EF5350" onclick="setMemDiff(4,this)">难 8对</button>
+      </div>
+      <div class="mem-grid" id="mem-grid"></div>
+      <button class="mem-start-btn" id="mem-start" onclick="initMemGame()">🧠 开始！Start!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  AUDIO
+// ══════════════════════════════════════
+var AC;
+function getAC(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();return AC;}
+function tone(f,t,d,v,dl){v=v||.15;dl=dl||0;
+  try{var ac=getAC(),o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);o.type=t;
+    o.frequency.setValueAtTime(f,ac.currentTime+dl);
+    g.gain.setValueAtTime(0,ac.currentTime+dl);
+    g.gain.linearRampToValueAtTime(v,ac.currentTime+dl+.01);
+    g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+dl+d);
+    o.start(ac.currentTime+dl);o.stop(ac.currentTime+dl+d+.02);}catch(e){}}
+function sfxOk(){[523,659,784,1046].forEach(function(n,i){tone(n,'sine',.12,.2,i*.1);});}
+function sfxNo(){tone(200,'sawtooth',.14,.1);tone(160,'sawtooth',.2,.08,.12);}
+function sfxPop(){tone(660,'triangle',.07,.14);tone(880,'triangle',.06,.1,.06);}
+function sfxWhack(){tone(400,'square',.05,.15);tone(200,'sawtooth',.1,.1,.04);}
+function sfxMiss(){tone(150,'sawtooth',.15,.08);}
+function sfxFlip(){tone(440,'sine',.08,.1);tone(550,'sine',.07,.08,.07);}
+function sfxMatch(){[523,659,784,1046].forEach(function(n,i){tone(n,'sine',.14,.2,i*.09);});}
+function sfxStreak(){[523,659,784,1046,1319,1568].forEach(function(n,i){tone(n,'sine',.12,.2,i*.07);});}
+function sfxVictory(){[523,659,784,1046,784,1046,1319,1046,1319,1568,1319,1568,2093].forEach(function(n,i){tone(n,'sine',.22,.18,i*.11);});}
+function sfxCD(){tone(440,'sine',.16,.14);}
+function sfxClick(){tone(880,'sine',.05,.08);}
+function sfxRoar(){for(var i=0;i<6;i++)tone(80+i*15,'sawtooth',.12,.07,i*.06);}
+
+// ══════════════════════════════════════
+//  MUSIC — jazzy + fun
+// ══════════════════════════════════════
+var musicOn=true,musicTO=null;
+var MN={C4:262,D4:294,E4:330,F4:349,G4:392,A4:440,B4:494,C5:523,D5:587,E5:659,F5:698,G5:784,A5:880,G3:196,A3:220,B3:247,C3:131,F3:175,D3:147,E3:165};
+var MEL=[[MN.G4,.2],[MN.A4,.2],[MN.C5,.3],[MN.A4,.15],[MN.G4,.2],[MN.E4,.35],[MN.D4,.2],[MN.F4,.2],[MN.A4,.3],[MN.G4,.15],[MN.F4,.2],[MN.E4,.35],[MN.G4,.15],[MN.G4,.15],[MN.A4,.2],[MN.C5,.2],[MN.D5,.3],[MN.C5,.2],[MN.A4,.3],[MN.E5,.2],[MN.D5,.15],[MN.C5,.2],[MN.A4,.2],[MN.G4,.2],[MN.E4,.2],[MN.D4,.35],[MN.G4,.2],[MN.B4,.2],[MN.D5,.3],[MN.G5,.4],[MN.F5,.2],[MN.E5,.15],[MN.D5,.2],[MN.C5,.2],[MN.B4,.2],[MN.A4,.35],[MN.G4,.15],[MN.A4,.15],[MN.G4,.15],[MN.F4,.15],[MN.E4,.15],[MN.D4,.15],[MN.C4,.5]];
+var BASS=[[MN.G3,.4],[MN.C4,.4],[MN.G3,.4],[MN.E3,.4],[MN.D3,.4],[MN.G3,.4],[MN.D3,.4],[MN.B3,.4],[MN.C4,.4],[MN.G3,.4],[MN.E3,.4],[MN.G3,.4],[MN.A3,.4],[MN.E3,.4],[MN.C4,.4],[MN.A3,.4],[MN.G3,.4],[MN.D4,.4],[MN.B3,.4],[MN.G3,.4],[MN.F3,.4],[MN.C4,.4],[MN.A3,.4],[MN.F3,.4],[MN.G3,.8],[MN.C4,.8]];
+function playMusic(){
+  if(!musicOn)return;
+  try{
+    var ac=getAC();ac.resume();var now=ac.currentTime+.08,mt=0,bt=0,total=0;
+    MEL.forEach(function(n){
+      var o=ac.createOscillator(),g=ac.createGain(),vib=ac.createOscillator(),vg=ac.createGain();
+      o.type='sine';o.frequency.value=n[0];vib.type='sine';vib.frequency.value=5.5;vg.gain.value=n[0]*.012;
+      vib.connect(vg);vg.connect(o.frequency);
+      g.gain.setValueAtTime(0,now+mt);g.gain.linearRampToValueAtTime(.06,now+mt+.02);g.gain.setValueAtTime(.06,now+mt+n[1]-.04);g.gain.linearRampToValueAtTime(0,now+mt+n[1]);
+      o.connect(g);g.connect(ac.destination);o.start(now+mt);o.stop(now+mt+n[1]+.02);vib.start(now+mt);vib.stop(now+mt+n[1]+.02);
+      var o2=ac.createOscillator(),g2=ac.createGain();o2.type='triangle';o2.frequency.value=n[0]*1.259;
+      g2.gain.setValueAtTime(0,now+mt);g2.gain.linearRampToValueAtTime(.02,now+mt+.03);g2.gain.setValueAtTime(.02,now+mt+n[1]-.05);g2.gain.linearRampToValueAtTime(0,now+mt+n[1]);
+      o2.connect(g2);g2.connect(ac.destination);o2.start(now+mt);o2.stop(now+mt+n[1]+.02);
+      mt+=n[1];
+    });
+    total=mt;
+    BASS.forEach(function(n){
+      var o=ac.createOscillator(),g=ac.createGain(),f=ac.createBiquadFilter();
+      o.type='sawtooth';o.frequency.value=n[0];f.type='lowpass';f.frequency.value=380;f.Q.value=2;
+      g.gain.setValueAtTime(0,now+bt);g.gain.linearRampToValueAtTime(.05,now+bt+.04);g.gain.setValueAtTime(.05,now+bt+n[1]-.07);g.gain.linearRampToValueAtTime(0,now+bt+n[1]);
+      o.connect(f);f.connect(g);g.connect(ac.destination);o.start(now+bt);o.stop(now+bt+n[1]+.02);bt+=n[1];
+    });
+    var beat=.2;
+    for(var i=0;i<Math.floor(total/beat);i++){
+      var t=now+i*beat;
+      if(i%4===0||i%4===2){var ok=ac.createOscillator(),gk=ac.createGain();ok.type='sine';ok.frequency.setValueAtTime(110,t);ok.frequency.exponentialRampToValueAtTime(35,t+.12);gk.gain.setValueAtTime(0,t);gk.gain.linearRampToValueAtTime(.1,t+.01);gk.gain.exponentialRampToValueAtTime(.001,t+.18);ok.connect(gk);gk.connect(ac.destination);ok.start(t);ok.stop(t+.2);}
+      if(i%4===1||i%4===3){var os=ac.createOscillator(),gs=ac.createGain();os.type='triangle';os.frequency.value=200;gs.gain.setValueAtTime(0,t);gs.gain.linearRampToValueAtTime(.04,t+.01);gs.gain.exponentialRampToValueAtTime(.001,t+.1);os.connect(gs);gs.connect(ac.destination);os.start(t);os.stop(t+.12);}
+      var oh=ac.createOscillator(),gh=ac.createGain();oh.type='square';oh.frequency.value=900;gh.gain.setValueAtTime(0,t+beat*.55);gh.gain.linearRampToValueAtTime(.014,t+beat*.55+.005);gh.gain.exponentialRampToValueAtTime(.001,t+beat*.55+.03);oh.connect(gh);gh.connect(ac.destination);oh.start(t+beat*.55);oh.stop(t+beat*.55+.04);
+    }
+    musicTO=setTimeout(function(){if(musicOn)playMusic();},(total+.3)*1000);
+  }catch(e){}
+}
+function stopMusic(){if(musicTO){clearTimeout(musicTO);musicTO=null;}}
+function toggleMusic(){
+  try{getAC().resume();}catch(e){}
+  musicOn=!musicOn;var b=document.getElementById('mbtn');
+  if(musicOn){b.textContent='🎵';b.classList.remove('off');playMusic();}
+  else{b.textContent='🔇';b.classList.add('off');stopMusic();}
+}
+
+// ══════════════════════════════════════
+//  SPEECH — CHINESE FIRST
+// ══════════════════════════════════════
+var voices=[];
+function loadV(){voices=window.speechSynthesis?window.speechSynthesis.getVoices():[];}
+if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=loadV;loadV();}
+function getV(lang){
+  if(!voices.length)voices=window.speechSynthesis?window.speechSynthesis.getVoices():[];
+  if(lang==='zh'){var zh=voices.find(function(v){return v.lang&&v.lang.indexOf('zh')>=0;});if(zh)return zh;}
+  var p=['Samantha','Karen','Moira','Tessa','Allison','Ava','Google UK English Female'];
+  for(var i=0;i<p.length;i++){var f=voices.find(function(v){return v.name.indexOf(p[i])>=0;});if(f)return f;}
+  return voices[0]||null;
+}
+function speakCN(txt,rate){
+  if(!window.speechSynthesis)return;
+  try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(txt);u.rate=rate||.88;u.pitch=1.25;u.volume=1;var v=getV('zh');if(v)u.voice=v;window.speechSynthesis.speak(u);}catch(e){}
+}
+function speakBi(cn,en,delay){
+  delay=delay||0;
+  setTimeout(function(){
+    if(!window.speechSynthesis)return;
+    try{
+      window.speechSynthesis.cancel();
+      var u1=new SpeechSynthesisUtterance(cn);u1.rate=.88;u1.pitch=1.25;var vc=getV('zh');if(vc)u1.voice=vc;
+      var u2=new SpeechSynthesisUtterance(en);u2.rate=.85;u2.pitch=1.2;var ve=getV('en');if(ve)u2.voice=ve;
+      window.speechSynthesis.speak(u1);window.speechSynthesis.speak(u2);
+    }catch(e){}
+  },delay);
+}
+
+// ══════════════════════════════════════
+//  SHARED
+// ══════════════════════════════════════
+var BOK_CN=['太棒了菠萝！','聪明极了！','菠萝真厉害！','完美！','超级聪明！','答对了！','加油菠萝！'];
+var BOK_EN=['Amazing Boluo!','Brilliant!','You rock!','Perfect!','Super smart!','Correct!','Go Boluo!'];
+var BNO_CN=['再试一次！','继续加油！','你能行的！','别放弃！'];
+var BNO_EN=['Try again!','Keep going!','You can do it!','Don\'t give up!'];
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
+function goHome(){
+  sfxClick();stopWak();stopMem();if(window.speechSynthesis)window.speechSynthesis.cancel();
+  document.getElementById('wc').classList.remove('show');showScreen('home-screen');
+}
+function doCD(cb){
+  var ov=document.getElementById('cdov'),nm=document.getElementById('cdnum');
+  ov.classList.add('show');var c=3;
+  function tick(){nm.className='cdnum';void nm.offsetWidth;
+    if(c>0){nm.textContent=c;sfxCD();nm.className='cdnum cdanim';c--;setTimeout(tick,900);}
+    else{nm.textContent='开始！🦕';sfxCD();nm.className='cdnum cdanim';setTimeout(function(){ov.classList.remove('show');if(cb)cb();},750);}
+  }tick();
+}
+function showFB(msg,ok){
+  var ov=document.getElementById('fbov'),fm=document.getElementById('fbmsg');
+  fm.textContent=msg;fm.className='fbmsg '+(ok?'ok':'no');
+  ov.classList.add('show');setTimeout(function(){ov.classList.remove('show');},1200);
+}
+function burst(){
+  var ems=['🦕','🦴','⭐','🌟','✨','🎉','🦖','🏆','🔺','🐾'];
+  for(var i=0;i<18;i++){
+    var el=document.createElement('div');el.className='pstar';
+    el.textContent=ems[Math.floor(Math.random()*ems.length)];
+    var ang=Math.random()*360,d=80+Math.random()*150;
+    el.style.cssText='left:50%;top:45%;--px:'+Math.cos(ang*Math.PI/180)*d+'px;--py:'+Math.sin(ang*Math.PI/180)*d+'px;--pr:'+Math.random()*360+'deg;--pd:'+(0.5+Math.random()*.9)+'s;--pdd:'+Math.random()*.15+'s';
+    document.body.appendChild(el);setTimeout(function(){el.remove();},1600);
+  }
+}
+function showWin(icon,title,cn,score,stars,playAgain){
+  sfxVictory();burst();
+  document.getElementById('wcicon').textContent=icon;
+  document.getElementById('wctitle').textContent=title;
+  document.getElementById('wccn').textContent=cn;
+  document.getElementById('wcscore').textContent='🦴 '+score+' 分';
+  document.getElementById('wcstars').textContent='🌟'.repeat(stars)+'☆'.repeat(3-stars);
+  document.getElementById('wcplay').onclick=playAgain;
+  document.getElementById('wc').classList.add('show');
+  speakBi(title+'！'+cn,title+'! Score: '+score,400);
+  for(var i=0;i<6;i++)(function(d){setTimeout(burst,d*200);})(i);
+}
+
+function startAll(){try{getAC().resume();if(musicOn&&!musicTO)playMusic();}catch(e){}}
+
+// ══════════════════════════════════════
+//  GAME 1: TREASURE MAP 🗺️
+// ══════════════════════════════════════
+var MAP_CLUES=[
+  {emoji:'🌋',text:'在火山旁边找化石！',en:'Find the fossil near the volcano!',answer:'🦴',grid:['🌋','🌿','⛰️','🦴','🌴','🪨','🌱','🌊','☁️']},
+  {emoji:'🌊',text:'在海边找恐龙的蛋！',en:'Find the dino egg near the sea!',answer:'🥚',grid:['🌴','🌊','🌊','🪨','🥚','🌊','🌿','🌿','🌊']},
+  {emoji:'🦴',text:'在骨头附近找恐龙！',en:'Find the dino near the bones!',answer:'🦕',grid:['🦴','🦴','🌿','🦕','🌱','🌴','🪨','⛰️','☁️']},
+  {emoji:'🌴',text:'在棕榈树下面找宝石！',en:'Find the gem under the palm tree!',answer:'💎',grid:['⛰️','🌴','🌴','🌿','🌿','🌱','🪨','💎','🦴']},
+  {emoji:'⛰️',text:'在山边找翼龙的化石！',en:'Find the Pterodactyl fossil near the mountain!',answer:'🦅',grid:['⛰️','⛰️','☁️','🌿','🦅','🌴','🌱','🦴','🪨']},
+  {emoji:'🌿',text:'在树叶丛中找恐龙爪！',en:'Find the dino claw in the leaves!',answer:'🐾',grid:['🌿','🌿','🌿','🌿','🐾','🌿','🌿','🌱','🌿']},
+  {emoji:'🦴',text:'找三角龙的角！',en:'Find the Triceratops horn!',answer:'📐',grid:['🌋','🔥','🌿','📐','🦴','⛰️','🌱','🌊','🪨']},
+  {emoji:'☁️',text:'在云朵下面找翼龙！',en:'Find the Pterodactyl under the clouds!',answer:'🦅',grid:['☁️','☁️','🌤️','🌊','🦅','🌊','🦴','🌿','🌱']},
+];
+
+var mapState={score:0,round:0,streak:0};
+
+function startMap(){
+  startAll();mapState={score:0,round:0,streak:0};
+  document.getElementById('map-score').textContent='0';
+  document.getElementById('map-streak').textContent='0';
+  showScreen('map-screen');
+  loadMapClue();
+  speakBi('寻宝地图！跟着线索找到化石！','Treasure map! Follow the clues to find the fossil!');
+}
+
+function loadMapClue(){
+  if(mapState.round>=MAP_CLUES.length){
+    var stars=mapState.score>=140?3:mapState.score>=100?2:1;
+    showWin('🗺️','寻宝成功！','菠萝找到所有化石！',mapState.score,stars,startMap);
+    return;
+  }
+  var c=MAP_CLUES[mapState.round];
+  document.getElementById('map-round').textContent=(mapState.round+1)+'/'+MAP_CLUES.length;
+  document.getElementById('clue-emoji').textContent=c.emoji;
+  document.getElementById('clue-text').textContent=c.text;
+  document.getElementById('clue-cn').textContent=c.en;
+  document.getElementById('map-bubble').textContent='线索 '+(mapState.round+1)+'：'+c.text;
+
+  // build step dots
+  var steps=document.getElementById('map-steps');steps.innerHTML='';
+  for(var i=0;i<MAP_CLUES.length;i++){
+    var d=document.createElement('div');d.className='mstep';
+    if(i<mapState.round){d.classList.add('done');d.textContent='🌟';}
+    else if(i===mapState.round){d.classList.add('cur');d.textContent='🗺️';}
+    else d.textContent='·';
+    steps.appendChild(d);
+  }
+
+  // build grid (shuffle positions keeping answer in random spot)
+  var grid=c.grid.slice().sort(function(){return Math.random()-.5;});
+  // make sure answer is in grid
+  if(grid.indexOf(c.answer)<0) grid[Math.floor(Math.random()*9)]=c.answer;
+
+  var mg=document.getElementById('map-grid');mg.innerHTML='';
+  var colors=['#FFF8E7','#E8F5E9','#E3F2FD','#F3E5F5','#FFF3E0','#FFEBEE','#FFFDE7','#E0F2F1','#FCE4EC'];
+  var borders=['#F9A825','#2E7D32','#1565C0','#6A1B9A','#E65100','#B71C1C','#F9A825','#00695C','#880E4F'];
+  grid.forEach(function(item,idx){
+    var cell=document.createElement('div');cell.className='map-cell';
+    cell.style.cssText='--mc:'+borders[idx]+';--mb:'+colors[idx]+';--ms:'+borders[idx]+'88;';
+    cell.textContent=item;
+    (function(it,ci){cell.addEventListener('click',function(){
+      if(cell.classList.contains('revealed'))return;
+      try{getAC().resume();}catch(e){}
+      cell.classList.add('revealed');
+      if(it===c.answer){
+        cell.classList.add('correct-cell');sfxOk();burst();
+        mapState.streak++;mapState.correct=(mapState.correct||0)+1;
+        var bonus=mapState.streak>=3?20:10;mapState.score+=bonus;
+        document.getElementById('map-score').textContent=mapState.score;
+        document.getElementById('map-streak').textContent=mapState.streak;
+        var idx2=Math.floor(Math.random()*BOK_CN.length);
+        if(mapState.streak>=3){sfxStreak();showFB('🔥'+mapState.streak+'连击！+'+bonus,true);}
+        else showFB(BOK_CN[idx2],true);
+        document.getElementById('map-bubble').textContent='找到了！'+it+' 太棒了菠萝！';
+        speakBi('找到了！'+BOK_CN[idx2],'Found it! '+BOK_EN[idx2],200);
+        mapState.round++;setTimeout(loadMapClue,1800);
+      } else {
+        cell.classList.add('wrong-cell');sfxNo();
+        mapState.streak=0;document.getElementById('map-streak').textContent='0';
+        var ni=Math.floor(Math.random()*BNO_CN.length);
+        showFB(BNO_CN[ni],false);
+        document.getElementById('map-bubble').textContent=BNO_CN[ni]+'！继续找！';
+        speakBi(BNO_CN[ni],BNO_EN[ni],100);
+        setTimeout(function(){cell.classList.remove('wrong-cell','revealed');},800);
+      }
+    });})(item,idx);
+    mg.appendChild(cell);
+  });
+  setTimeout(speakClue,600);
+}
+
+function speakClue(){
+  var c=MAP_CLUES[mapState.round];if(!c)return;
+  speakBi(c.text,c.en);
+}
+
+// ══════════════════════════════════════
+//  GAME 2: WHACK-A-DINO 🎪
+// ══════════════════════════════════════
+var WAK_DINOS=['🦕','🦖','🦏','🦅','🐉','🦴','🥚','💎'];
+var wakState={score:0,hits:0,misses:0,running:false};
+var wakTimer=null,wakSpawnTimer=null,wakTimeLeft=30;
+var wakIntervals=[];
+
+function startWak(){
+  startAll();showScreen('wak-screen');
+  buildWakGrid();
+  document.getElementById('wak-score').textContent='0';
+  document.getElementById('wak-hits').textContent='0';
+  document.getElementById('wak-time').textContent='30';
+  document.getElementById('timer-bar').style.width='100%';
+  document.getElementById('wak-start').style.display='';
+  document.getElementById('wak-bubble').textContent='准备好了吗？快拍打恐龙！🦕';
+  speakBi('打恐龙！快拍打弹出的恐龙！','Whack-a-Dino! Tap the dinos before they hide!');
+}
+
+function buildWakGrid(){
+  var grid=document.getElementById('wak-grid');grid.innerHTML='';
+  for(var i=0;i<9;i++){
+    var hole=document.createElement('div');hole.className='hole';
+    var inner=document.createElement('div');inner.className='hole-inner';inner.id='hole-'+i;
+    inner.textContent='';
+    (function(idx){inner.addEventListener('click',function(){whackHole(idx);});})(i);
+    hole.appendChild(inner);grid.appendChild(hole);
+  }
+}
+
+function startWakGame(){
+  document.getElementById('wak-start').style.display='none';
+  wakState={score:0,hits:0,misses:0,running:true};
+  wakTimeLeft=30;
+  document.getElementById('wak-bubble').textContent='快！快！拍打它！Go go go!';
+  doCD(function(){runWak();});
+}
+
+function runWak(){
+  // spawn dinos
+  function spawn(){
+    if(!wakState.running)return;
+    var available=[];
+    for(var i=0;i<9;i++){var h=document.getElementById('hole-'+i);if(h&&!h.classList.contains('up'))available.push(i);}
+    if(available.length>0){
+      var pick=available[Math.floor(Math.random()*available.length)];
+      var dino=WAK_DINOS[Math.floor(Math.random()*WAK_DINOS.length)];
+      var h=document.getElementById('hole-'+pick);
+      h.textContent=dino;h.classList.add('up');
+      var stayTime=1000+Math.random()*800;
+      var hideTO=setTimeout(function(){
+        if(h.classList.contains('up')){h.classList.remove('up');h.textContent='';}
+      },stayTime);
+      h._hideTO=hideTO;
+    }
+    var nextSpawn=400+Math.random()*400;
+    wakSpawnTimer=setTimeout(spawn,nextSpawn);
+  }
+  spawn();
+
+  // countdown timer
+  var timerInterval=setInterval(function(){
+    if(!wakState.running){clearInterval(timerInterval);return;}
+    wakTimeLeft--;
+    document.getElementById('wak-time').textContent=wakTimeLeft;
+    document.getElementById('timer-bar').style.width=(wakTimeLeft/30*100)+'%';
+    if(wakTimeLeft<=10) document.getElementById('wak-time').style.color='var(--red)';
+    if(wakTimeLeft<=0){
+      clearInterval(timerInterval);
+      stopWak();
+      endWakGame();
+    }
+  },1000);
+  wakIntervals.push(timerInterval);
+}
+
+function whackHole(idx){
+  if(!wakState.running)return;
+  var h=document.getElementById('hole-'+idx);if(!h||!h.classList.contains('up'))return;
+  try{getAC().resume();}catch(e){}
+  sfxWhack();sfxRoar();
+  clearTimeout(h._hideTO);
+  var dino=h.textContent;
+  h.classList.add('whacked');h.classList.remove('up');
+  wakState.hits++;wakState.score+=10;
+  document.getElementById('wak-hits').textContent=wakState.hits;
+  document.getElementById('wak-score').textContent=wakState.score;
+  // float score
+  var float=document.createElement('div');float.className='wak-hit';float.textContent='+10 '+dino;
+  h.parentElement.style.position='relative';h.parentElement.appendChild(float);
+  setTimeout(function(){float.remove();h.classList.remove('whacked');h.textContent='';},600);
+  burst();
+  if(wakState.hits%5===0){sfxStreak();speakCN(BOK_CN[Math.floor(Math.random()*BOK_CN.length)]);}
+}
+
+function stopWak(){
+  wakState.running=false;
+  if(wakSpawnTimer){clearTimeout(wakSpawnTimer);wakSpawnTimer=null;}
+  wakIntervals.forEach(clearInterval);wakIntervals=[];
+  for(var i=0;i<9;i++){var h=document.getElementById('hole-'+i);if(h){clearTimeout(h._hideTO);h.classList.remove('up','whacked');h.textContent='';}}
+}
+
+function endWakGame(){
+  var stars=wakState.hits>=20?3:wakState.hits>=12?2:wakState.hits>=6?1:0;
+  showWin('🎪','打恐龙赢了！','菠萝打了'+wakState.hits+'只恐龙！',wakState.score,stars,function(){
+    document.getElementById('wc').classList.remove('show');startWak();
+  });
+}
+
+// ══════════════════════════════════════
+//  GAME 3: MEMORY CARDS 🧠
+// ══════════════════════════════════════
+var MEM_ITEMS=[
+  {e:'🦕',cn:'腕龙'},{e:'🦖',cn:'霸王龙'},{e:'🦏',cn:'三角龙'},
+  {e:'🦅',cn:'翼龙'},{e:'🐉',cn:'剑龙'},{e:'🦴',cn:'化石骨头'},
+  {e:'🥚',cn:'恐龙蛋'},{e:'💎',cn:'宝石'},
+];
+var memState={flipped:[],matched:[],flips:0,pairs:0,score:0,running:false,locked:false};
+var memPairs=2; // 4 cards default
+var memCards=[];
+
+function setMemDiff(pairs,btn){
+  sfxClick();memPairs=pairs;
+  document.querySelectorAll('.diff-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+}
+
+function startMem(){
+  startAll();showScreen('mem-screen');
+  memState={flipped:[],matched:[],flips:0,pairs:0,score:0,running:false,locked:false};
+  document.getElementById('mem-score').textContent='0';
+  document.getElementById('mem-flips').textContent='0';
+  document.getElementById('mem-pairs').textContent='0';
+  document.getElementById('mem-bubble').textContent='找到相同的恐龙！记住它们！🧠';
+  document.getElementById('mem-start').style.display='';
+  document.getElementById('mem-grid').innerHTML='';
+  speakBi('翻牌配对！找到相同的恐龙！','Memory cards! Find the matching dino pairs!');
+}
+
+function initMemGame(){
+  document.getElementById('mem-start').style.display='none';
+  memState={flipped:[],matched:[],flips:0,pairs:0,score:0,running:true,locked:false};
+  document.getElementById('mem-bubble').textContent='翻开牌找相同的恐龙！🦕';
+
+  // build card set
+  var items=MEM_ITEMS.slice(0,memPairs);
+  var doubled=items.concat(items).sort(function(){return Math.random()-.5;});
+  memCards=doubled;
+
+  var grid=document.getElementById('mem-grid');grid.innerHTML='';
+  var cols=memPairs===2?2:memPairs===3?3:4;
+  grid.style.gridTemplateColumns='repeat('+cols+',1fr)';
+
+  doubled.forEach(function(item,idx){
+    var card=document.createElement('div');card.className='mem-card';card.id='mc-'+idx;
+    card.innerHTML=
+      '<div class="card-front">🦴</div>'+
+      '<div class="card-back">'+item.e+'<div class="card-back-cn">'+item.cn+'</div></div>';
+    (function(i){card.addEventListener('click',function(){flipCard(i);});})(idx);
+    grid.appendChild(card);
+  });
+
+  doCD(function(){memState.running=true;});
+}
+
+function flipCard(idx){
+  if(!memState.running||memState.locked)return;
+  if(memState.matched.indexOf(idx)>=0)return;
+  if(memState.flipped.indexOf(idx)>=0)return;
+  sfxFlip();
+  var card=document.getElementById('mc-'+idx);
+  card.classList.add('flipped');
+  memState.flipped.push(idx);
+  memState.flips++;
+  document.getElementById('mem-flips').textContent=memState.flips;
+
+  if(memState.flipped.length===2){
+    memState.locked=true;
+    var i1=memState.flipped[0],i2=memState.flipped[1];
+    if(memCards[i1].e===memCards[i2].e){
+      // MATCH!
+      setTimeout(function(){
+        sfxMatch();burst();
+        document.getElementById('mc-'+i1).classList.add('matched');
+        document.getElementById('mc-'+i2).classList.add('matched');
+        memState.matched.push(i1,i2);
+        memState.pairs++;memState.score+=20;
+        document.getElementById('mem-pairs').textContent=memState.pairs;
+        document.getElementById('mem-score').textContent=memState.score;
+        var idx2=Math.floor(Math.random()*BOK_CN.length);
+        showFB(BOK_CN[idx2],true);
+        document.getElementById('mem-bubble').textContent='配对成功！'+memCards[i1].e+' '+BOK_CN[idx2];
+        speakBi(memCards[i1].cn+'！配对成功！'+BOK_CN[idx2],memCards[i1].cn+'! Match! '+BOK_EN[idx2],100);
+        memState.flipped=[];memState.locked=false;
+        if(memState.pairs>=memPairs){
+          setTimeout(function(){
+            var stars=memState.flips<=memPairs*3?3:memState.flips<=memPairs*5?2:1;
+            showWin('🧠','记忆大师！','菠萝配对了所有恐龙！',memState.score,stars,function(){
+              document.getElementById('wc').classList.remove('show');initMemGame();
+            });
+          },800);
+        }
+      },500);
+    } else {
+      // NO MATCH
+      setTimeout(function(){
+        sfxNo();
+        document.getElementById('mc-'+i1).classList.remove('flipped');
+        document.getElementById('mc-'+i2).classList.remove('flipped');
+        memState.flipped=[];memState.locked=false;
+        var ni=Math.floor(Math.random()*BNO_CN.length);
+        showFB(BNO_CN[ni],false);
+        document.getElementById('mem-bubble').textContent=BNO_CN[ni]+'！再试试！';
+        speakCN(BNO_CN[ni]);
+      },800);
+    }
+  }
+}
+
+function stopMem(){memState.running=false;memState.locked=false;}
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+document.addEventListener('click',function once(){
+  try{getAC().resume();if(musicOn&&!musicTO)playMusic();}catch(e){}
+  document.removeEventListener('click',once);
+},{once:true});
+</script>
+</body>
+</html>
