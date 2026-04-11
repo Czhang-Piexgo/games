@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NYC Kids Academy 🗽</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{--taxi:#F5A800;--nr:#FF3860;--nb:#0088FF;--ng:#00C853;--np:#AA00FF;--dark:#1a1a2e;--white:#ffffff;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100vh;overflow-x:hidden;}
+body{font-family:'Nunito',sans-serif;background:#eef2ff;user-select:none;}
+/* SCENE — daytime NYC */
+#scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.sky{position:absolute;inset:0;background:linear-gradient(180deg,#87CEEB 0%,#B0E0FF 40%,#d4eeff 65%,#e8f4e8 85%,#c8d8a8 100%);}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--t) ease-in-out infinite var(--d);display:none;}
+@keyframes twinkle{0%,100%{opacity:var(--o)}50%{opacity:.02}}
+.moon{position:absolute;top:24px;right:50px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,#FFE800,#FFB300);box-shadow:0 0 0 8px rgba(255,220,0,.2),0 0 40px rgba(255,200,0,.4),0 0 80px rgba(255,180,0,.2);}
+.moon-c{display:none;}
+/* Statue of Liberty */
+.lib-wrap{position:absolute;bottom:105px;left:1%;display:flex;flex-direction:column;align-items:center;}
+.lib-fire{font-size:2.2rem;line-height:1;animation:fireglow 1s ease-in-out infinite alternate;filter:drop-shadow(0 0 12px #FFD700);}
+@keyframes fireglow{to{filter:drop-shadow(0 0 24px #FF8800) drop-shadow(0 0 40px #FFEE00)}}
+.lib-emoji{font-size:7rem;line-height:1;display:block;filter:drop-shadow(0 0 20px rgba(80,200,130,.5));}
+.lib-base{width:60px;height:18px;background:linear-gradient(#4a7a4a,#2a5028);border-radius:3px;}
+/* Empire State */
+.esb-wrap{position:absolute;bottom:105px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 0 35px rgba(255,210,50,.28));}
+.esb-beacon{width:10px;height:10px;background:#FF1515;border-radius:50%;box-shadow:0 0 14px #FF1515,0 0 30px #FF1515;animation:beacon 1.35s ease-in-out infinite;}
+@keyframes beacon{0%,100%{opacity:1}50%{opacity:.05}}
+.esb-spire{width:6px;height:115px;background:linear-gradient(#FFE030,#bbb);box-shadow:0 0 12px rgba(255,215,40,.55);}
+.esb-crown{width:26px;height:48px;background:linear-gradient(#dae4ff,#9aaace);border-radius:2px 2px 0 0;}
+.esb-s1{width:50px;height:36px;background:linear-gradient(#9aaace,#7a8cb0);}
+.esb-s2{width:72px;height:30px;background:linear-gradient(#7a8cb0,#6a7ca0);}
+.esb-s3{width:90px;height:26px;background:linear-gradient(#6a7ca0,#5a6c90);}
+.esb-body{width:108px;height:200px;background:linear-gradient(#5a6c90,#3c4e70,#28365a);display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:7px 6px;align-content:start;}
+.esb-b1{width:138px;height:52px;background:linear-gradient(#28365a,#1c2840);}
+.esb-b2{width:168px;height:28px;background:#141e30;}
+.ew{height:13px;border-radius:1px;}
+.ew.y{background:rgba(255,218,78,.92);box-shadow:0 0 5px rgba(255,218,78,.6);}
+.ew.b{background:rgba(115,205,255,.85);box-shadow:0 0 5px rgba(115,205,255,.5);}
+.ew.o{background:rgba(255,138,38,.88);}
+.ew.d{background:rgba(255,255,255,.04);}
+/* Chrysler */
+.chr-wrap{position:absolute;bottom:105px;right:6%;display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 0 22px rgba(170,215,255,.26));}
+.chr-needle{width:3px;height:85px;background:linear-gradient(#fff,#aaccee);}
+.chr-t1{width:46px;height:24px;background:linear-gradient(#bcd0e8,#8898b8);clip-path:polygon(50% 0%,100% 100%,0% 100%);}
+.chr-t2{width:62px;height:22px;background:linear-gradient(#a8b8d0,#7888a8);clip-path:polygon(50% 0%,100% 100%,0% 100%);}
+.chr-arc{width:76px;height:40px;background:linear-gradient(#8898b8,#667888);clip-path:polygon(0% 100%,9% 0%,24% 56%,38% 0%,50% 56%,62% 0%,76% 56%,91% 0%,100% 100%);}
+.chr-body{width:84px;height:160px;background:linear-gradient(#667888,#485868,#384450);display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:5px 4px;align-content:start;}
+.chr-base{width:102px;height:48px;background:#2a3344;}
+.cw{height:12px;border-radius:1px;}
+.cw.y{background:rgba(255,218,78,.82);}
+.cw.b{background:rgba(115,205,255,.72);}
+.cw.d{background:rgba(255,255,255,.04);}
+/* SVG Skyline */
+.svg-skyline{position:absolute;bottom:105px;left:0;right:0;width:100%;pointer-events:none;}
+/* Moving sky objects */
+.plane{position:fixed;font-size:2.6rem;top:9%;z-index:3;pointer-events:none;animation:fly-r 22s linear infinite 2s;filter:drop-shadow(0 3px 10px rgba(0,0,0,.5));}
+@keyframes fly-r{from{transform:translateX(-100px)}to{transform:translateX(115vw)}}
+.heli{position:fixed;font-size:2rem;top:20%;z-index:3;pointer-events:none;animation:fly-l 30s linear infinite 8s;filter:drop-shadow(0 3px 8px rgba(0,0,0,.4));}
+@keyframes fly-l{from{transform:translateX(115vw) scaleX(-1)}to{transform:translateX(-100px) scaleX(-1)}}
+.pigeon{position:fixed;font-size:1.6rem;z-index:3;pointer-events:none;animation:pigfly var(--pt) ease-in-out infinite var(--pd);}
+@keyframes pigfly{0%,100%{transform:translate(0,0)}25%{transform:translate(50px,-25px)}50%{transform:translate(100px,8px)}75%{transform:translate(145px,-12px)}}
+.balloon{position:fixed;font-size:2.4rem;z-index:3;pointer-events:none;animation:balloonup var(--bt) ease-in-out infinite var(--bd);}
+@keyframes balloonup{0%,100%{transform:translateY(0)}50%{transform:translateY(-28px)}}
+.bgbldg{position:absolute;bottom:105px;border-radius:2px 2px 0 0;}
+.wtower{position:absolute;font-size:1.8rem;opacity:.72;}
+.smoke{position:absolute;border-radius:50%;background:rgba(145,155,175,.2);animation:smokego var(--st) ease-out infinite var(--sd);}
+@keyframes smokego{0%{transform:scale(1) translateY(0);opacity:.38}100%{transform:scale(4.5) translateY(-110px);opacity:0}}
+.nsign{position:absolute;font-family:'Fredoka One',cursive;letter-spacing:2px;padding:5px 11px;border-radius:5px;border:2px solid;white-space:nowrap;animation:nflicker var(--nft) ease-in-out infinite;}
+@keyframes nflicker{0%,88%,100%{opacity:1}90%{opacity:.1}93%{opacity:1}97%{opacity:.2}}
+.bboard{position:absolute;font-family:'Fredoka One',cursive;font-size:.76rem;padding:5px 10px;border-radius:5px;border:2px solid var(--bc);color:var(--bc);background:rgba(0,0,0,.5);white-space:nowrap;letter-spacing:1px;text-shadow:0 0 8px var(--bc),0 0 16px var(--bc);box-shadow:0 0 10px var(--bc);animation:nflicker var(--nft) ease-in-out infinite;}
+/* Road */
+.road{position:absolute;bottom:0;left:0;right:0;height:105px;background:linear-gradient(180deg,#15151e,#0d0d16);}
+.road-swalk{position:absolute;top:0;left:0;right:0;height:16px;background:#1c1e2c;border-bottom:2px solid rgba(255,255,255,.08);}
+.road-line{position:absolute;top:50%;left:0;right:0;height:6px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,#FFE033 0,#FFE033 36px,transparent 36px,transparent 72px);opacity:.88;}
+/* Subway */
+.subrow{position:absolute;bottom:108px;left:0;right:0;height:38px;overflow:hidden;}
+.subway-anim{position:absolute;font-size:2rem;animation:v-drive var(--vt) linear infinite var(--vd);filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
+/* Vehicles — face RIGHT using scaleX(1), drive left→right */
+.street{position:absolute;bottom:105px;left:0;right:0;height:105px;overflow:hidden;}
+.vehicle{position:absolute;animation:v-drive var(--vt) linear infinite var(--vd);filter:drop-shadow(2px 3px 5px rgba(0,0,0,.65));transform:scaleX(-1);}
+@keyframes v-drive{from{left:-160px}to{left:115%}}
+/* Music btn */
+.mubtn{position:fixed;top:14px;left:14px;z-index:50;width:44px;height:44px;border-radius:50%;background:white;border:2px solid var(--taxi);display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;touch-action:manipulation;box-shadow:0 2px 8px rgba(0,0,80,.15);}
+.mubtn.off{opacity:.4;filter:grayscale(1);}
+/* APP */
+#app{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px 10px 115px;}
+.screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:500px;}
+.screen.active{display:flex;}
+/* HOME */
+.h-eyebrow{font-family:'Fredoka One',cursive;font-size:.7rem;letter-spacing:5px;color:#888aaa;text-transform:uppercase;text-align:center;margin-top:10px;}
+.h-title{font-family:'Fredoka One',cursive;font-size:clamp(3rem,10vw,5rem);color:#cc7700;text-shadow:0 4px 0 rgba(245,168,0,.3);text-align:center;letter-spacing:3px;line-height:1;margin-bottom:2px;}
+.h-sub{font-family:'Fredoka One',cursive;font-size:1.15rem;color:var(--nb);letter-spacing:4px;text-align:center;margin-bottom:10px;text-transform:uppercase;}
+.h-icons{font-size:2.8rem;text-align:center;letter-spacing:5px;margin-bottom:12px;}
+.pbox{background:white;border:2px solid #e0e4f8;border-radius:18px;padding:14px;width:100%;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,80,.08);}
+.pbox-t{font-family:'Fredoka One',cursive;font-size:.95rem;color:#333355;text-align:center;margin-bottom:10px;letter-spacing:1px;}
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.pnum{font-size:1.3rem;width:28px;flex-shrink:0;}
+.pinp{flex:1;background:#f5f7ff;border:2px solid #d0d4f0;border-radius:10px;padding:8px 12px;color:#222244;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;outline:none;transition:border-color .2s;}
+.pinp:focus{border-color:var(--taxi);}
+.pinp::placeholder{color:#aaaacc;}
+.ptog{width:50px;height:26px;border-radius:13px;border:none;cursor:pointer;font-family:'Fredoka One',cursive;font-size:.68rem;touch-action:manipulation;}
+.ptog.on{background:var(--ng);color:white;}
+.ptog.off{background:#e0e0ee;color:#999;}
+.gsel-wrap{display:flex;flex-direction:column;gap:10px;width:100%;}
+.gsel{border-radius:20px;cursor:pointer;border:2px solid var(--gc);background:var(--gb);box-shadow:0 4px 16px var(--gg),0 6px 0 rgba(0,0,0,.12);transition:transform .18s;touch-action:manipulation;overflow:hidden;position:relative;}
+.gsel:hover{transform:translateY(-4px);}
+.gsel:active{transform:translateY(2px);}
+.gs1{--gc:var(--taxi);--gb:#fffbe6;--gg:rgba(245,168,0,.2);}
+.gs2{--gc:var(--nb);--gb:#e8f4ff;--gg:rgba(0,136,255,.15);}
+.gsel-in{display:flex;align-items:stretch;}
+.gsel-img{width:110px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:3.2rem;background:var(--gi);border-right:2px solid var(--gc);padding:8px;line-height:1.2;gap:2px;}
+.gs1 .gsel-img{--gi:rgba(245,168,0,.12);}
+.gs2 .gsel-img{--gi:rgba(0,136,255,.08);font-family:'Fredoka One',cursive;font-size:2.8rem;color:var(--nb);}
+.gsel-info{flex:1;padding:14px;}
+.gsel-name{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--gc);letter-spacing:1px;margin-bottom:4px;}
+.gsel-desc{font-size:.8rem;color:#666688;font-weight:700;line-height:1.45;}
+.gsel-badge{font-family:'Fredoka One',cursive;font-size:.7rem;background:var(--gc);color:white;padding:4px 12px;border-radius:0 0 0 14px;position:absolute;top:0;right:0;}
+/* Game screens */
+.topbar{display:flex;align-items:center;gap:8px;width:100%;margin-bottom:8px;}
+.bbtn{font-family:'Fredoka One',cursive;font-size:.8rem;border:2px solid var(--taxi);background:#fffbe6;color:#cc7700;border-radius:11px;padding:7px 12px;cursor:pointer;touch-action:manipulation;}
+.bbtn:active{transform:scale(.94);}
+.mtag{font-family:'Fredoka One',cursive;font-size:.82rem;color:#cc7700;background:#fffbe6;padding:5px 12px;border-radius:50px;flex:1;text-align:center;border:2px solid var(--taxi);letter-spacing:1px;}
+.sb{background:white;border:2px solid #e0e4f8;border-radius:14px;padding:8px 12px;width:100%;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,80,.08);}
+.sb-hd{font-family:'Fredoka One',cursive;font-size:.66rem;color:#8888aa;letter-spacing:2px;text-align:center;margin-bottom:6px;text-transform:uppercase;}
+.sb-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.sbp{border-radius:11px;padding:5px 10px;border:2px solid var(--spc);background:var(--spb);display:flex;flex-direction:column;align-items:center;min-width:70px;}
+.sbp.now{animation:sbglow .9s ease-in-out infinite alternate;}
+@keyframes sbglow{from{transform:scale(1);box-shadow:0 0 6px var(--spc)}to{transform:scale(1.07);box-shadow:0 0 22px var(--spc)}}
+.sbn{font-family:'Fredoka One',cursive;font-size:.7rem;color:var(--spc);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sbs{font-family:'Fredoka One',cursive;font-size:1.4rem;color:#222244;}
+.sbd{font-size:.54rem;color:#888aaa;}
+.turnbanner{font-family:'Fredoka One',cursive;font-size:1rem;padding:8px 18px;border-radius:50px;border:2px solid var(--tc);background:var(--tb);color:var(--tc);text-align:center;width:100%;margin-bottom:8px;box-shadow:0 0 16px var(--tg);letter-spacing:1px;}
+.progwrap{width:100%;background:#e8eaf6;border-radius:50px;height:8px;margin-bottom:8px;overflow:hidden;}
+.progfill{height:100%;background:linear-gradient(90deg,var(--taxi),var(--nr));border-radius:50px;transition:width .5s;}
+.chararea{display:flex;flex-direction:column;align-items:center;margin-bottom:8px;}
+.charface{font-size:3rem;animation:bounce 2s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+.cbubble{background:white;border:2px solid #e0e4f8;border-radius:15px;padding:7px 14px;font-size:.88rem;font-weight:900;color:#333355;text-align:center;margin-top:5px;max-width:300px;position:relative;box-shadow:0 2px 8px rgba(0,0,80,.08);}
+.cbubble::before{content:'';position:absolute;top:-11px;left:50%;transform:translateX(-50%);border:8px solid transparent;border-bottom-color:#e0e4f8;}
+/* QUESTION CARD */
+.qcard{background:white;border:3px solid var(--qbc,rgba(245,168,0,.5));border-radius:24px;padding:22px 18px;width:100%;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,80,.1);animation:qpop .4s cubic-bezier(.34,1.56,.64,1) both;}
+.qcard::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--taxi),var(--nr),var(--nb),var(--ng));}
+@keyframes qpop{from{opacity:0;transform:scale(.88) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.qlabel{font-family:'Fredoka One',cursive;font-size:.7rem;letter-spacing:3px;color:#aaaacc;text-align:center;margin-bottom:10px;text-transform:uppercase;}
+/* STAGE */
+.stage{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;min-height:120px;align-items:center;background:#f5f7ff;border-radius:18px;padding:18px;border:2px solid #e0e4f8;margin-bottom:12px;}
+.sitem{font-size:clamp(2.6rem,9vw,3.8rem);display:inline-block;animation:spop .25s cubic-bezier(.34,1.56,.64,1) both;animation-delay:var(--id);filter:drop-shadow(0 3px 6px rgba(0,0,80,.2));}
+@keyframes spop{from{transform:scale(0) rotate(-14deg)}to{transform:scale(1) rotate(0)}}
+.qtxt{font-family:'Fredoka One',cursive;font-size:1.15rem;color:#222244;text-align:center;margin-bottom:3px;}
+.qtxt-cn{font-size:.82rem;color:#8888aa;font-weight:900;text-align:center;margin-bottom:4px;}
+/* BIG LETTER */
+.bigltr{font-family:'Fredoka One',cursive;font-size:clamp(7rem,22vw,11rem);line-height:1;display:block;text-align:center;animation:ltrpop .5s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes ltrpop{from{transform:scale(0) rotate(-22deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.word-emoji{font-size:3.4rem;display:block;text-align:center;margin-bottom:3px;animation:ltrpop .5s cubic-bezier(.34,1.56,.64,1) .08s both;}
+.word-txt{font-family:'Fredoka One',cursive;font-size:1.4rem;color:#222244;letter-spacing:4px;text-align:center;margin-bottom:2px;}
+.word-hl{font-size:1.8rem;}
+.word-cn{font-size:.82rem;color:#8888aa;font-weight:900;text-align:center;}
+.mode-hint{font-size:.85rem;font-weight:900;color:#555577;background:#f0f2ff;border-radius:10px;padding:6px 14px;margin:7px auto;display:inline-block;text-align:center;}
+.hearbtn{font-family:'Fredoka One',cursive;font-size:.86rem;background:#fffbe6;border:2px solid var(--taxi);color:#cc7700;border-radius:50px;padding:8px 20px;cursor:pointer;letter-spacing:1px;display:block;margin:8px auto 2px;touch-action:manipulation;}
+.hearbtn.on{border-color:var(--ng);color:var(--ng);background:#e8fff0;}
+/* CHOICES */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;}
+.cbtn{font-family:'Fredoka One',cursive;border-radius:18px;padding:20px 8px;cursor:pointer;border:3px solid var(--cc);background:var(--cbg);color:var(--cc);box-shadow:0 7px 0 var(--cs);transition:transform .14s,box-shadow .14s;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;overflow:hidden;}
+.cbtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.6),transparent 55%);pointer-events:none;}
+.cbtn:nth-child(1){--cc:#cc7700;--cbg:#fffbe6;--cs:rgba(245,168,0,.5);}
+.cbtn:nth-child(2){--cc:var(--nr);--cbg:#fff0f4;--cs:rgba(255,56,96,.35);}
+.cbtn:nth-child(3){--cc:var(--nb);--cbg:#e8f4ff;--cs:rgba(0,136,255,.35);}
+.cbtn:nth-child(4){--cc:var(--ng);--cbg:#e8fff0;--cs:rgba(0,200,83,.35);}
+.cbtn:hover:not(:disabled){transform:translateY(-4px);box-shadow:0 11px 0 var(--cs);}
+.cbtn:active:not(:disabled){transform:translateY(2px);box-shadow:0 3px 0 var(--cs);}
+.cbtn.correct{background:#e8fff0!important;border-color:var(--ng)!important;box-shadow:0 7px 0 rgba(0,200,83,.45)!important;animation:cfl .4s;}
+.cbtn.wrong{opacity:.34;animation:wsh .4s;}
+.cbtn:disabled{cursor:not-allowed;}
+.cbtn-big{font-size:clamp(2.2rem,7vw,3.2rem);line-height:1.1;}
+.cbtn-sm{font-size:.68rem;color:inherit;opacity:.65;line-height:1;}
+@keyframes cfl{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes wsh{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+/* Feedback */
+.fbov{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;pointer-events:none;opacity:0;transition:opacity .2s;}
+.fbov.show{opacity:1;}
+.fbmsg{font-family:'Fredoka One',cursive;font-size:clamp(2.4rem,10vw,5.5rem);text-align:center;animation:zpop .4s cubic-bezier(.34,1.56,.64,1);line-height:1.2;padding:0 20px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.3));}
+.fbmsg.ok{color:var(--ng);text-shadow:0 0 20px rgba(0,200,83,.6);}
+.fbmsg.no{color:var(--nr);text-shadow:0 0 20px rgba(255,56,96,.6);}
+@keyframes zpop{from{transform:scale(0) rotate(-10deg)}to{transform:scale(1) rotate(0)}}
+.pstar{position:fixed;pointer-events:none;z-index:55;font-size:1.5rem;animation:pfly var(--pd) ease-out forwards var(--pdd);}
+@keyframes pfly{0%{transform:translate(0,0) scale(1) rotate(0);opacity:1}100%{transform:translate(var(--px),var(--py)) scale(0) rotate(var(--pr));opacity:0}}
+/* Leaderboard */
+.lbscr{position:fixed;inset:0;background:rgba(240,244,255,.96);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(16px);opacity:0;pointer-events:none;transition:opacity .4s;}
+.lbscr.show{opacity:1;pointer-events:all;}
+.lbcard{background:white;border:2px solid #e0e4f8;border-radius:24px;padding:26px;text-align:center;max-width:380px;width:92%;box-shadow:0 8px 32px rgba(0,0,80,.12);animation:zpop .5s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;}
+.lbcard::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--taxi),var(--nr),var(--nb),var(--ng));}
+.lb-icon{font-size:4rem;display:block;animation:bounce 2s ease-in-out infinite;margin-bottom:8px;}
+.lb-title{font-family:'Fredoka One',cursive;font-size:1.8rem;color:#cc7700;margin-bottom:3px;}
+.lb-sub{font-size:.82rem;font-weight:900;color:#888aaa;margin-bottom:12px;}
+.lb-rows{width:100%;margin-bottom:14px;}
+.lb-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;margin-bottom:6px;border:2px solid var(--lc);background:var(--lb);}
+.lb-medal{font-size:1.5rem;width:30px;text-align:center;}
+.lb-name{font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--lc);flex:1;text-align:left;}
+.lb-score{font-family:'Fredoka One',cursive;font-size:1.35rem;color:#222244;}
+.lb-det{font-size:.6rem;color:#888aaa;}
+.lb-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.lbbtn{font-family:'Fredoka One',cursive;font-size:.9rem;border-radius:12px;padding:10px 18px;cursor:pointer;border:2px solid;touch-action:manipulation;letter-spacing:1px;}
+.lbbtn.pri{border-color:var(--taxi);background:#fffbe6;color:#cc7700;}
+.lbbtn.sec{border-color:#d0d4f0;background:#f5f7ff;color:#666688;}
+.cdov{position:fixed;inset:0;background:rgba(240,244,255,.95);display:none;align-items:center;justify-content:center;z-index:200;pointer-events:none;backdrop-filter:blur(14px);}
+.cdov.show{display:flex;}
+.cdnum{font-family:'Fredoka One',cursive;font-size:clamp(5rem,20vw,10rem);color:#cc7700;text-shadow:0 4px 0 rgba(245,168,0,.3);}
+.cdanim{animation:cdpop .82s cubic-bezier(.34,1.56,.64,1);}
+@keyframes cdpop{0%{transform:scale(0) rotate(-18deg);opacity:0}68%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+<div id="scene">
+  <div class="sky"></div>
+  <div id="starlayer"></div>
+  <div class="moon"><div class="moon-c" style="width:11px;height:11px;top:18px;left:16px"></div><div class="moon-c" style="width:7px;height:7px;top:40px;left:52px"></div></div>
+
+  <!-- Sky movers -->
+  <div class="plane">✈️</div>
+  <div class="heli">🚁</div>
+  <div class="pigeon" style="top:26%;left:8%;--pt:7s;--pd:0s">🕊️</div>
+  <div class="pigeon" style="top:32%;left:42%;--pt:9s;--pd:3.5s">🕊️</div>
+  <div class="pigeon" style="top:22%;left:70%;--pt:6.5s;--pd:5.5s">🕊️</div>
+  <div class="balloon" style="top:18%;left:20%;--bt:8s;--bd:0s">🎈</div>
+  <div class="balloon" style="top:14%;right:25%;--bt:11s;--bd:4s">🎆</div>
+
+  <!-- Statue of Liberty (far left, keeps emoji for recognizability) -->
+  <div class="lib-wrap"><div class="lib-fire">🔥</div><div class="lib-emoji">🗽</div><div class="lib-base"></div></div>
+
+  <!-- ═══════════════════════════════════════════
+       NYC SKYLINE — hand-drawn SVG
+       Full width, positioned above the road
+       Buildings from left to right:
+       Generic bldg | Brooklyn Bridge tower | Flatiron | One WTC | Empire State | Chrysler | Generic bldgs
+  ═══════════════════════════════════════════ -->
+  <svg class="svg-skyline" viewBox="0 0 1000 420" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+    <defs>
+      <!-- Window glow filters -->
+      <filter id="glow-y"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="glow-b"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <!-- ESB beacon glow -->
+      <filter id="beacon-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <!-- Building gradients -->
+      <linearGradient id="g-esb" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3a4a6a"/><stop offset="50%" stop-color="#5a6c8e"/><stop offset="100%" stop-color="#2e3e5c"/></linearGradient>
+      <linearGradient id="g-chr" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4a5868"/><stop offset="50%" stop-color="#6a7888"/><stop offset="100%" stop-color="#3a4858"/></linearGradient>
+      <linearGradient id="g-owt" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#162040"/><stop offset="40%" stop-color="#1e2c52"/><stop offset="100%" stop-color="#0e1830"/></linearGradient>
+      <linearGradient id="g-flat" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7a6848"/><stop offset="100%" stop-color="#5a5038"/></linearGradient>
+      <linearGradient id="g-dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#252d40"/><stop offset="100%" stop-color="#141c2c"/></linearGradient>
+      <linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a1830"/><stop offset="100%" stop-color="#061020"/></linearGradient>
+    </defs>
+
+    <!-- ── BACKGROUND FILLER BUILDINGS (behind everything) ── -->
+    <rect x="0" y="220" width="60" height="200" fill="#0e1626" rx="1"/>
+    <rect x="55" y="260" width="45" height="160" fill="#0c1420" rx="1"/>
+    <rect x="95" y="200" width="55" height="220" fill="#101828" rx="1"/>
+    <rect x="145" y="240" width="40" height="180" fill="#0e1624" rx="1"/>
+    <rect x="680" y="230" width="50" height="190" fill="#0e1626" rx="1"/>
+    <rect x="725" y="250" width="60" height="170" fill="#0c1420" rx="1"/>
+    <rect x="780" y="215" width="48" height="205" fill="#101828" rx="1"/>
+    <rect x="823" y="245" width="55" height="175" fill="#0e1624" rx="1"/>
+    <rect x="873" y="200" width="65" height="220" fill="#0c1420" rx="1"/>
+    <rect x="933" y="235" width="67" height="185" fill="#101828" rx="1"/>
+
+    <!-- ── BROOKLYN BRIDGE ── -->
+    <!-- left tower -->
+    <rect x="80" y="270" width="24" height="150" fill="#3a4858" rx="2"/>
+    <!-- Gothic arches -->
+    <path d="M80,295 Q92,275 104,295" stroke="#4a5868" stroke-width="3" fill="none"/>
+    <path d="M80,320 Q92,300 104,320" stroke="#4a5868" stroke-width="2" fill="none"/>
+    <!-- cables -->
+    <line x1="92" y1="272" x2="10" y2="360" stroke="#5a6878" stroke-width="1.5" opacity=".7"/>
+    <line x1="92" y1="272" x2="175" y2="345" stroke="#5a6878" stroke-width="1.5" opacity=".7"/>
+    <!-- suspender lines -->
+    <line x1="30" y1="356" x2="35" y2="420" stroke="#5a6878" stroke-width="1" opacity=".5"/>
+    <line x1="55" y1="350" x2="55" y2="420" stroke="#5a6878" stroke-width="1" opacity=".5"/>
+    <line x1="130" y1="350" x2="130" y2="420" stroke="#5a6878" stroke-width="1" opacity=".5"/>
+    <line x1="155" y1="355" x2="155" y2="420" stroke="#5a6878" stroke-width="1" opacity=".5"/>
+    <!-- road deck -->
+    <rect x="0" y="355" width="185" height="10" fill="#252d3c" rx="1"/>
+    <!-- right tower -->
+    <rect x="163" y="270" width="24" height="150" fill="#3a4858" rx="2"/>
+    <path d="M163,295 Q175,275 187,295" stroke="#4a5868" stroke-width="3" fill="none"/>
+    <path d="M163,320 Q175,300 187,320" stroke="#4a5868" stroke-width="2" fill="none"/>
+    <!-- bridge label -->
+    <text x="93" y="418" font-family="Fredoka One,cursive" font-size="8" fill="rgba(150,170,190,.5)" text-anchor="middle" letter-spacing="1">BROOKLYN BRIDGE</text>
+
+    <!-- ── FLATIRON BUILDING ── -->
+    <!-- Famous triangular wedge shape -->
+    <polygon points="220,420 260,280 300,420" fill="url(#g-flat)"/>
+    <!-- facade detail lines -->
+    <line x1="220" y1="380" x2="300" y2="380" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+    <line x1="222" y1="340" x2="298" y2="340" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+    <line x1="228" y1="310" x2="292" y2="310" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+    <line x1="236" y1="285" x2="284" y2="285" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+    <!-- windows scattered -->
+    <rect x="238" y="352" width="6" height="8" fill="rgba(255,218,80,.75)" rx="1" filter="url(#glow-y)"/>
+    <rect x="252" y="352" width="6" height="8" fill="rgba(115,205,255,.7)" rx="1"/>
+    <rect x="266" y="352" width="6" height="8" fill="rgba(255,218,80,.75)" rx="1" filter="url(#glow-y)"/>
+    <rect x="280" y="352" width="6" height="8" fill="rgba(115,205,255,.7)" rx="1"/>
+    <rect x="242" y="320" width="6" height="8" fill="rgba(255,218,80,.75)" rx="1" filter="url(#glow-y)"/>
+    <rect x="256" y="320" width="6" height="8" fill="rgba(115,205,255,.7)" rx="1"/>
+    <rect x="270" y="320" width="6" height="8" fill="rgba(255,218,80,.75)" rx="1" filter="url(#glow-y)"/>
+    <rect x="246" y="295" width="5" height="7" fill="rgba(255,218,80,.75)" rx="1" filter="url(#glow-y)"/>
+    <rect x="258" y="295" width="5" height="7" fill="rgba(115,205,255,.7)" rx="1"/>
+    <!-- peaked top -->
+    <polygon points="254,265 260,280 266,265" fill="#b0a888"/>
+    <!-- Flatiron label -->
+    <text x="260" y="415" font-family="Fredoka One,cursive" font-size="7.5" fill="rgba(180,160,120,.55)" text-anchor="middle">FLATIRON</text>
+
+    <!-- ── ONE WORLD TRADE CENTER ── -->
+    <!-- Distinctive chamfered obelisk shape -->
+    <polygon points="348,420 356,110 420,110 428,420" fill="url(#g-owt)"/>
+    <!-- chamfered corners -->
+    <polygon points="348,420 356,110 352,180 345,420" fill="rgba(0,0,0,.18)"/>
+    <polygon points="428,420 420,110 424,180 431,420" fill="rgba(255,255,255,.06)"/>
+    <!-- glass reflections -->
+    <rect x="360" y="130" width="8" height="260" fill="rgba(120,180,255,.06)" rx="1"/>
+    <rect x="373" y="130" width="6" height="260" fill="rgba(120,180,255,.04)" rx="1"/>
+    <!-- windows -->
+    <g fill="rgba(255,218,78,.72)" filter="url(#glow-y)">
+      <rect x="360" y="145" width="6" height="9" rx="1"/><rect x="370" y="145" width="6" height="9" rx="1"/>
+      <rect x="380" y="145" width="6" height="9" rx="1"/><rect x="390" y="145" width="6" height="9" rx="1"/>
+      <rect x="400" y="145" width="6" height="9" rx="1"/><rect x="410" y="145" width="6" height="9" rx="1"/>
+      <rect x="360" y="170" width="6" height="9" rx="1"/><rect x="380" y="170" width="6" height="9" rx="1"/>
+      <rect x="400" y="170" width="6" height="9" rx="1"/><rect x="415" y="170" width="6" height="9" rx="1"/>
+    </g>
+    <g fill="rgba(115,205,255,.7)">
+      <rect x="370" y="170" width="6" height="9" rx="1"/><rect x="390" y="170" width="6" height="9" rx="1"/>
+      <rect x="360" y="200" width="6" height="9" rx="1"/><rect x="375" y="200" width="6" height="9" rx="1"/>
+      <rect x="390" y="200" width="6" height="9" rx="1"/><rect x="405" y="200" width="6" height="9" rx="1"/>
+      <rect x="360" y="230" width="6" height="9" rx="1"/><rect x="385" y="230" width="6" height="9" rx="1"/>
+      <rect x="408" y="230" width="6" height="9" rx="1"/>
+    </g>
+    <!-- repeating window rows lower -->
+    <g fill="rgba(255,218,78,.6)">
+      <rect x="360" y="260" width="6" height="9" rx="1"/><rect x="372" y="260" width="6" height="9" rx="1"/>
+      <rect x="384" y="260" width="6" height="9" rx="1"/><rect x="396" y="260" width="6" height="9" rx="1"/>
+      <rect x="408" y="260" width="6" height="9" rx="1"/>
+      <rect x="362" y="290" width="6" height="9" rx="1"/><rect x="374" y="290" width="6" height="9" rx="1"/>
+      <rect x="386" y="290" width="6" height="9" rx="1"/><rect x="398" y="290" width="6" height="9" rx="1"/>
+      <rect x="362" y="320" width="6" height="9" rx="1"/><rect x="378" y="320" width="6" height="9" rx="1"/>
+      <rect x="394" y="320" width="6" height="9" rx="1"/><rect x="406" y="320" width="6" height="9" rx="1"/>
+      <rect x="364" y="350" width="6" height="9" rx="1"/><rect x="378" y="350" width="6" height="9" rx="1"/>
+      <rect x="392" y="350" width="6" height="9" rx="1"/><rect x="406" y="350" width="6" height="9" rx="1"/>
+      <rect x="365" y="378" width="6" height="9" rx="1"/><rect x="379" y="378" width="6" height="9" rx="1"/>
+      <rect x="393" y="378" width="6" height="9" rx="1"/><rect x="405" y="378" width="6" height="9" rx="1"/>
+    </g>
+    <!-- spire -->
+    <rect x="385" y="20" width="6" height="92" fill="url(#g-sky)" opacity=".9"/>
+    <rect x="383" y="108" width="10" height="6" fill="#3a5070"/>
+    <!-- antenna light -->
+    <circle cx="388" cy="20" r="4" fill="#FF1515" filter="url(#beacon-glow)">
+      <animate attributeName="opacity" values="1;0.05;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="388" y="416" font-family="Fredoka One,cursive" font-size="7" fill="rgba(100,160,220,.5)" text-anchor="middle">ONE WORLD TRADE</text>
+
+    <!-- ── EMPIRE STATE BUILDING (center hero) ── -->
+    <!-- Base / lobby -->
+    <rect x="455" y="370" width="130" height="50" fill="#1a2238" rx="1"/>
+    <!-- Wide lower body -->
+    <rect x="468" y="300" width="104" height="74" fill="url(#g-esb)"/>
+    <!-- Setback 1 -->
+    <rect x="478" y="255" width="84" height="50" fill="#4a5a7a"/>
+    <!-- Setback 2 -->
+    <rect x="490" y="218" width="60" height="40" fill="#5a6a8a"/>
+    <!-- Setback 3 -->
+    <rect x="498" y="188" width="44" height="34" fill="#6a7a9a"/>
+    <!-- Tower top -->
+    <rect x="505" y="148" width="30" height="44" fill="#7a8aaa"/>
+    <!-- Crown -->
+    <rect x="512" y="120" width="16" height="32" fill="#8a9aba"/>
+    <!-- Mooring mast -->
+    <rect x="518" y="60" width="4" height="64" fill="#aabbcc"/>
+    <!-- Top antenna / spire -->
+    <rect x="519" y="18" width="2" height="44" fill="#dddddd"/>
+    <!-- Beacon -->
+    <circle cx="520" cy="18" r="5" fill="#FF1515" filter="url(#beacon-glow)">
+      <animate attributeName="opacity" values="1;0.05;1" dur="1.4s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Horizontal banding (iconic Art Deco setback lines) -->
+    <rect x="468" y="298" width="104" height="3" fill="rgba(255,255,255,.12)"/>
+    <rect x="478" y="253" width="84" height="3" fill="rgba(255,255,255,.1)"/>
+    <rect x="490" y="216" width="60" height="3" fill="rgba(255,255,255,.1)"/>
+    <rect x="498" y="186" width="44" height="3" fill="rgba(255,255,255,.1)"/>
+    <!-- Windows - wide body -->
+    <g fill="rgba(255,218,78,.88)" filter="url(#glow-y)">
+      <rect x="472" y="308" width="8" height="11" rx="1"/><rect x="484" y="308" width="8" height="11" rx="1"/>
+      <rect x="496" y="308" width="8" height="11" rx="1"/><rect x="508" y="308" width="8" height="11" rx="1"/>
+      <rect x="520" y="308" width="8" height="11" rx="1"/><rect x="532" y="308" width="8" height="11" rx="1"/>
+      <rect x="544" y="308" width="8" height="11" rx="1"/>
+      <rect x="472" y="330" width="8" height="11" rx="1"/><rect x="484" y="330" width="8" height="11" rx="1"/>
+      <rect x="508" y="330" width="8" height="11" rx="1"/><rect x="520" y="330" width="8" height="11" rx="1"/>
+      <rect x="544" y="330" width="8" height="11" rx="1"/>
+      <rect x="472" y="352" width="8" height="11" rx="1"/><rect x="496" y="352" width="8" height="11" rx="1"/>
+      <rect x="520" y="352" width="8" height="11" rx="1"/><rect x="544" y="352" width="8" height="11" rx="1"/>
+    </g>
+    <g fill="rgba(115,205,255,.8)">
+      <rect x="496" y="330" width="8" height="11" rx="1"/><rect x="532" y="330" width="8" height="11" rx="1"/>
+      <rect x="484" y="352" width="8" height="11" rx="1"/><rect x="508" y="352" width="8" height="11" rx="1"/>
+      <rect x="532" y="352" width="8" height="11" rx="1"/>
+    </g>
+    <!-- Windows - setback levels -->
+    <g fill="rgba(255,218,78,.8)">
+      <rect x="483" y="264" width="7" height="10" rx="1"/><rect x="494" y="264" width="7" height="10" rx="1"/>
+      <rect x="505" y="264" width="7" height="10" rx="1"/><rect x="516" y="264" width="7" height="10" rx="1"/>
+      <rect x="527" y="264" width="7" height="10" rx="1"/><rect x="540" y="264" width="7" height="10" rx="1"/>
+      <rect x="483" y="280" width="7" height="10" rx="1"/><rect x="505" y="280" width="7" height="10" rx="1"/>
+      <rect x="527" y="280" width="7" height="10" rx="1"/><rect x="541" y="280" width="7" height="10" rx="1"/>
+    </g>
+    <g fill="rgba(115,205,255,.75)">
+      <rect x="494" y="228" width="7" height="9" rx="1"/><rect x="505" y="228" width="7" height="9" rx="1"/>
+      <rect x="516" y="228" width="7" height="9" rx="1"/><rect x="527" y="228" width="7" height="9" rx="1"/>
+      <rect x="494" y="242" width="7" height="9" rx="1"/><rect x="516" y="242" width="7" height="9" rx="1"/>
+      <rect x="530" y="242" width="7" height="9" rx="1"/>
+    </g>
+    <!-- ESB label -->
+    <text x="520" y="416" font-family="Fredoka One,cursive" font-size="8" fill="rgba(180,200,240,.55)" text-anchor="middle" letter-spacing=".5">EMPIRE STATE</text>
+
+    <!-- ── CHRYSLER BUILDING ── -->
+    <!-- Base / lower body -->
+    <rect x="610" y="360" width="90" height="60" fill="#283040" rx="1"/>
+    <!-- Mid body -->
+    <rect x="618" y="290" width="74" height="74" fill="url(#g-chr)"/>
+    <!-- Upper body -->
+    <rect x="628" y="240" width="54" height="55" fill="#5a6878"/>
+    <!-- Distinctive EAGLE / ARCH crown — the most recognizable part -->
+    <!-- Radiating sunburst arches (Art Deco) -->
+    <path d="M633,238 Q655,185 677,238 Z" fill="#8a9aaa"/>
+    <path d="M637,238 Q655,190 673,238" stroke="rgba(200,220,240,.4)" stroke-width="1.5" fill="none"/>
+    <path d="M629,238 Q655,178 681,238 Z" fill="#7a8a9a" opacity=".6"/>
+    <!-- Nested arch tiers -->
+    <path d="M641,238 Q655,200 669,238" stroke="rgba(200,220,240,.3)" stroke-width="1" fill="none"/>
+    <path d="M645,238 Q655,208 665,238" stroke="rgba(200,220,240,.3)" stroke-width="1" fill="none"/>
+    <!-- Narrowing crown tiers -->
+    <rect x="645" y="165" width="20" height="76" fill="#6a7a8a"/>
+    <rect x="649" y="142" width="12" height="27" fill="#788898"/>
+    <!-- Needle -->
+    <rect x="653" y="50" width="4" height="96" fill="#c0d0e0"/>
+    <rect x="651" y="138" width="8" height="8" fill="#889aaa"/>
+    <!-- Windows - body -->
+    <g fill="rgba(255,218,78,.78)">
+      <rect x="622" y="298" width="7" height="10" rx="1"/><rect x="632" y="298" width="7" height="10" rx="1"/>
+      <rect x="642" y="298" width="7" height="10" rx="1"/><rect x="652" y="298" width="7" height="10" rx="1"/>
+      <rect x="662" y="298" width="7" height="10" rx="1"/><rect x="672" y="298" width="7" height="10" rx="1"/>
+      <rect x="622" y="318" width="7" height="10" rx="1"/><rect x="642" y="318" width="7" height="10" rx="1"/>
+      <rect x="662" y="318" width="7" height="10" rx="1"/><rect x="676" y="318" width="7" height="10" rx="1"/>
+      <rect x="622" y="338" width="7" height="10" rx="1"/><rect x="638" y="338" width="7" height="10" rx="1"/>
+      <rect x="654" y="338" width="7" height="10" rx="1"/><rect x="670" y="338" width="7" height="10" rx="1"/>
+    </g>
+    <g fill="rgba(115,205,255,.72)">
+      <rect x="632" y="318" width="7" height="10" rx="1"/><rect x="652" y="318" width="7" height="10" rx="1"/>
+      <rect x="632" y="338" width="7" height="10" rx="1"/><rect x="660" y="338" width="7" height="10" rx="1"/>
+    </g>
+    <!-- upper crown windows -->
+    <g fill="rgba(255,218,78,.7)">
+      <rect x="631" y="252" width="6" height="9" rx="1"/><rect x="641" y="252" width="6" height="9" rx="1"/>
+      <rect x="651" y="252" width="6" height="9" rx="1"/><rect x="661" y="252" width="6" height="9" rx="1"/>
+      <rect x="671" y="252" width="6" height="9" rx="1"/>
+      <rect x="631" y="268" width="6" height="9" rx="1"/><rect x="651" y="268" width="6" height="9" rx="1"/>
+      <rect x="671" y="268" width="6" height="9" rx="1"/>
+    </g>
+    <!-- Chrysler label -->
+    <text x="655" y="416" font-family="Fredoka One,cursive" font-size="7.5" fill="rgba(140,170,200,.5)" text-anchor="middle">CHRYSLER</text>
+
+    <!-- ── MORE BACKGROUND BUILDINGS (right) ── -->
+    <rect x="745" y="280" width="50" height="140" fill="#1c2438" rx="1"/>
+    <!-- windows -->
+    <g fill="rgba(255,218,78,.6)">
+      <rect x="750" y="288" width="6" height="8" rx="1"/><rect x="760" y="288" width="6" height="8" rx="1"/>
+      <rect x="770" y="288" width="6" height="8" rx="1"/><rect x="782" y="288" width="6" height="8" rx="1"/>
+      <rect x="750" y="306" width="6" height="8" rx="1"/><rect x="765" y="306" width="6" height="8" rx="1"/>
+      <rect x="780" y="306" width="6" height="8" rx="1"/>
+    </g>
+    <rect x="800" y="255" width="65" height="165" fill="#1a2235" rx="1"/>
+    <g fill="rgba(115,205,255,.6)">
+      <rect x="806" y="264" width="7" height="10" rx="1"/><rect x="817" y="264" width="7" height="10" rx="1"/>
+      <rect x="828" y="264" width="7" height="10" rx="1"/><rect x="839" y="264" width="7" height="10" rx="1"/>
+      <rect x="850" y="264" width="7" height="10" rx="1"/>
+      <rect x="806" y="284" width="7" height="10" rx="1"/><rect x="828" y="284" width="7" height="10" rx="1"/>
+      <rect x="850" y="284" width="7" height="10" rx="1"/>
+      <rect x="806" y="304" width="7" height="10" rx="1"/><rect x="820" y="304" width="7" height="10" rx="1"/>
+      <rect x="834" y="304" width="7" height="10" rx="1"/><rect x="848" y="304" width="7" height="10" rx="1"/>
+    </g>
+    <rect x="870" y="230" width="55" height="190" fill="#202838" rx="1"/>
+    <g fill="rgba(255,218,78,.65)">
+      <rect x="876" y="240" width="7" height="10" rx="1"/><rect x="887" y="240" width="7" height="10" rx="1"/>
+      <rect x="898" y="240" width="7" height="10" rx="1"/><rect x="910" y="240" width="7" height="10" rx="1"/>
+      <rect x="876" y="260" width="7" height="10" rx="1"/><rect x="900" y="260" width="7" height="10" rx="1"/>
+      <rect x="915" y="260" width="7" height="10" rx="1"/>
+    </g>
+    <rect x="930" y="268" width="70" height="152" fill="#181e2e" rx="1"/>
+    <g fill="rgba(255,218,78,.55)">
+      <rect x="936" y="276" width="7" height="9" rx="1"/><rect x="948" y="276" width="7" height="9" rx="1"/>
+      <rect x="960" y="276" width="7" height="9" rx="1"/><rect x="972" y="276" width="7" height="9" rx="1"/>
+      <rect x="984" y="276" width="7" height="9" rx="1"/>
+    </g>
+  </svg>
+
+  <!-- Water towers on rooftops -->
+  <div class="wtower" style="bottom:312px;left:25%">🏗️</div>
+  <div class="wtower" style="bottom:350px;right:30%">🏗️</div>
+
+  <!-- Smoke -->
+  <div class="smoke" style="width:16px;height:16px;left:17%;bottom:310px;--st:4s;--sd:0s"></div>
+  <div class="smoke" style="width:14px;height:14px;left:21%;bottom:330px;--st:5.5s;--sd:1.4s"></div>
+  <div class="smoke" style="width:15px;height:15px;left:66%;bottom:298px;--st:4.8s;--sd:.9s"></div>
+  <div class="smoke" style="width:13px;height:13px;right:19%;bottom:315px;--st:6s;--sd:2.2s"></div>
+
+  <!-- Times Square billboards -->
+  <div class="bboard" style="bottom:345px;left:34%;--bc:#FF3860;--nft:2.8s">🍕 $1 PIZZA</div>
+  <div class="bboard" style="bottom:378px;right:25%;--bc:#00D4FF;--nft:3.6s">I ❤️ NYC</div>
+  <div class="bboard" style="bottom:408px;left:6%;--bc:#FFE033;--nft:4.2s;font-size:.68rem">🎷 JAZZ TONITE</div>
+  <div class="bboard" style="bottom:324px;right:8%;--bc:#E040FB;--nft:2.4s;font-size:.7rem">BROADWAY 🎭</div>
+  <div class="bboard" style="bottom:445px;left:46%;--bc:#3DFF4F;--nft:5.1s;font-size:.65rem">🗽 NYC ♥</div>
+  <div class="bboard" style="bottom:385px;left:55%;--bc:#FF9800;--nft:3s;font-size:.65rem">🏀 KNICKS</div>
+
+  <!-- Neon street signs -->
+  <div class="nsign" style="bottom:200px;left:3%;font-size:.9rem;color:#FF3860;border-color:#FF3860;text-shadow:0 0 10px #FF3860,0 0 22px #FF3860;--nft:3.2s">🌭 HOT DOGS</div>
+  <div class="nsign" style="bottom:185px;right:3%;font-size:.88rem;color:#00D4FF;border-color:#00D4FF;text-shadow:0 0 10px #00D4FF,0 0 22px #00D4FF;--nft:2.5s">☕ OPEN 24H</div>
+  <div class="nsign" style="bottom:226px;left:38%;font-size:.72rem;color:#FF9800;border-color:#FF9800;text-shadow:0 0 8px #FF9800;--nft:2s">🚇 SUBWAY</div>
+  <div class="nsign" style="bottom:260px;right:38%;font-size:.68rem;color:#FFE033;border-color:#FFE033;text-shadow:0 0 8px #FFE033;--nft:4.5s">🍕 PIZZA</div>
+
+  <!-- Subway M sign -->
+  <div style="position:absolute;bottom:172px;left:43%;width:32px;height:32px;background:#1a1aaa;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:.9rem;color:white;border:3px solid white;box-shadow:0 0 12px rgba(26,26,170,.7)">M</div>
+
+  <!-- Street props -->
+  <div style="position:absolute;bottom:107px;left:27%;font-size:1.5rem">🚒</div>
+  <div style="position:absolute;bottom:107px;right:23%;font-size:1.4rem">🚧</div>
+  <div style="position:absolute;bottom:107px;left:54%;font-size:1.3rem">🗑️</div>
+
+  <!-- Subway trains -->
+  <div class="subrow"><div class="subway-anim" style="--vt:16s;--vd:0s;bottom:4px">🚇🚃🚃🚃</div><div class="subway-anim" style="--vt:25s;--vd:11s;bottom:4px">🚇🚃🚃</div></div>
+
+  <!-- Street vehicles -->
+  <div class="street" id="streetlane"></div>
+  <div class="road"><div class="road-swalk"></div><div class="road-line"></div></div>
+</div>
+<button class="mubtn" id="mbtn" onclick="toggleMusic()">🎵</button>
+<div class="fbov" id="fbov"><div class="fbmsg" id="fbmsg"></div></div>
+<div class="lbscr" id="lbscr">
+  <div class="lbcard">
+    <span class="lb-icon" id="lb-icon">🏆</span>
+    <div class="lb-title" id="lb-title">Round Done!</div>
+    <div class="lb-sub" id="lb-sub">NYC Scoreboard!</div>
+    <div class="lb-rows" id="lb-rows"></div>
+    <div class="lb-btns">
+      <button class="lbbtn pri" id="lb-again">Play Again! 🚕</button>
+      <button class="lbbtn sec" onclick="goHome()">🏠 Home</button>
+    </div>
+  </div>
+</div>
+<div class="cdov" id="cdov"><div class="cdnum" id="cdnum">3</div></div>
+<div id="app">
+  <div class="screen active" id="home-screen">
+    <div class="h-eyebrow">✦ Welcome to ✦</div>
+    <div class="h-title">NEW YORK</div>
+    <div class="h-sub">Kids Academy 🗽</div>
+    <div class="h-icons">🗽&nbsp;🚕&nbsp;🌭&nbsp;🏙️&nbsp;🎷</div>
+    <div class="pbox"><div class="pbox-t">👥 Who's Playing? 谁来玩？</div><div id="pslots"></div></div>
+    <!-- HOME SCOREBOARD -->
+    <div id="home-sb-wrap" style="width:100%;margin-bottom:12px;display:none">
+      <div style="background:rgba(0,0,0,.45);border:2px solid rgba(255,224,51,.22);border-radius:16px;padding:12px 14px;backdrop-filter:blur(10px)">
+        <div style="font-family:'Fredoka One',cursive;font-size:.7rem;color:var(--taxi);letter-spacing:2px;text-align:center;margin-bottom:8px;text-transform:uppercase">🏆 TODAY'S SCORES 今日积分</div>
+        <div id="home-sb-rows" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"></div>
+      </div>
+    </div>
+    <div class="gsel-wrap">
+      <div class="gsel gs1" onclick="startCount()">
+        <div class="gsel-in">
+          <div class="gsel-img">🚕<br>➕<br>🌭</div>
+          <div class="gsel-info"><div class="gsel-name">NYC Math! 数学！</div><div class="gsel-desc">Count & add taxis, hot dogs & more!<br>数数加法，纽约风格！🚕➕🌭</div></div>
+        </div><div class="gsel-badge">PLAY!</div>
+      </div>
+      <div class="gsel gs2" onclick="startAlpha()">
+        <div class="gsel-in">
+          <div class="gsel-img">A<br>B<br>C</div>
+          <div class="gsel-info"><div class="gsel-name">NYC Alphabet! 字母！</div><div class="gsel-desc">Learn A-Z with NYC words!<br>用纽约单词学26个英文字母！</div></div>
+        </div><div class="gsel-badge">PLAY!</div>
+      </div>
+    </div>
+  </div>
+  <div class="screen" id="count-screen">
+    <div class="topbar"><button class="bbtn" onclick="goHome()">← Home</button><div class="mtag">🚕 NYC Math 数学</div></div>
+    <div class="sb" id="csb"></div>
+    <div class="turnbanner" id="cturn">-</div>
+    <div class="progwrap"><div class="progfill" id="cprog" style="width:0%"></div></div>
+    <!-- PER-QUESTION TIMER BAR -->
+    <div style="width:100%;background:rgba(255,255,255,.08);border-radius:50px;height:10px;margin-bottom:8px;overflow:hidden;border:1px solid rgba(255,255,255,.1)">
+      <div id="c-timer-bar" style="height:100%;width:100%;background:#3DFF4F;border-radius:50px;transition:width .95s linear,background .3s"></div>
+    </div>
+    <div class="chararea"><div class="charface">🗽</div><div class="cbubble" id="cbubble">Count them! 数一数！</div></div>
+    <div class="qcard">
+      <div class="qlabel">⭐ HOW MANY? · 数一数 ⭐</div>
+      <!-- GAME CLOCK -->
+      <div style="text-align:center;margin-bottom:10px">
+        <span id="c-clock" style="font-family:'Fredoka One',cursive;font-size:1rem;color:rgba(255,224,51,.6);letter-spacing:2px">⏱ 0s</span>
+      </div>
+      <div class="stage" id="cstage"></div>
+      <div class="qtxt" id="cqtxt"></div>
+      <div class="qtxt-cn" id="cqcn"></div>
+    </div>
+    <div class="choices" id="cchoices"></div>
+  </div>
+  <div class="screen" id="alpha-screen">
+    <div class="topbar"><button class="bbtn" onclick="goHome()">← Home</button><div class="mtag">🔤 NYC Alphabet 字母</div></div>
+    <div class="sb" id="asb"></div>
+    <div class="turnbanner" id="aturn">-</div>
+    <div class="progwrap"><div class="progfill" id="aprog" style="width:0%"></div></div>
+    <!-- PER-QUESTION TIMER BAR -->
+    <div style="width:100%;background:rgba(255,255,255,.08);border-radius:50px;height:10px;margin-bottom:8px;overflow:hidden;border:1px solid rgba(255,255,255,.1)">
+      <div id="a-timer-bar" style="height:100%;width:100%;background:#00D4FF;border-radius:50px;transition:width .95s linear,background .3s"></div>
+    </div>
+    <div class="chararea"><div class="charface">🗽</div><div class="cbubble" id="ababble">Find the letter! 找字母！</div></div>
+    <div class="qcard" style="--qbc:rgba(0,212,255,.4);--qgl:rgba(0,212,255,.12)">
+      <div class="qlabel" style="color:rgba(0,212,255,.5)">🔤 FIND THE LETTER · 找字母 🔤</div>
+      <!-- GAME CLOCK -->
+      <div style="text-align:center;margin-bottom:10px">
+        <span id="a-clock" style="font-family:'Fredoka One',cursive;font-size:1rem;color:rgba(0,212,255,.6);letter-spacing:2px">⏱ 0s</span>
+      </div>
+      <div id="aldisp" style="text-align:center;margin-bottom:6px;"></div>
+      <button class="hearbtn" id="hearbtn" onclick="hearLetter()">🔊 Hear it! 听一听！</button>
+    </div>
+    <div class="choices" id="achoices"></div>
+  </div>
+</div>
+<script>
+'use strict';
+var ACtx;
+function getAC(){if(!ACtx)ACtx=new(window.AudioContext||window.webkitAudioContext)();return ACtx;}
+function tone(f,tp,d,v,dl){v=v===undefined?.15:v;dl=dl||0;try{var c=getAC(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=tp;o.frequency.setValueAtTime(f,c.currentTime+dl);g.gain.setValueAtTime(0,c.currentTime+dl);g.gain.linearRampToValueAtTime(v,c.currentTime+dl+.01);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dl+d);o.start(c.currentTime+dl);o.stop(c.currentTime+dl+d+.02);}catch(e){}}
+function sfxOK(){[523,659,784,1046].forEach(function(n,i){tone(n,'sine',.12,.2,i*.1);});}
+function sfxNo(){tone(200,'sawtooth',.14,.1);tone(160,'sawtooth',.2,.08,.13);}
+function sfxStreak(){[523,659,784,1046,1319,1568].forEach(function(n,i){tone(n,'sine',.12,.2,i*.07);});}
+function sfxWin(){[523,659,784,1046,784,1046,1319,1568,2093].forEach(function(n,i){tone(n,'sine',.22,.18,i*.11);});}
+function sfxCD(){tone(440,'sine',.16,.14);}
+function sfxClick(){tone(880,'sine',.05,.08);}
+var musicOn=true,musicTO=null;
+// Bright happy xylophone-style kids music
+function playMusic(){
+  if(!musicOn)return;
+  try{
+    var c=getAC();c.resume();
+    var now=c.currentTime+.05;
+    // Happy C major melody — xylophone feel with bell tones
+    var mel=[
+      [1047,.2],[1319,.2],[1568,.2],[2093,.4],
+      [1568,.2],[1319,.2],[1047,.4],
+      [1175,.2],[1047,.2],[880,.2],[1047,.4],
+      [784,.2],[880,.2],[1047,.2],[880,.4],
+      [1047,.2],[1175,.2],[1319,.2],[1568,.4],
+      [1319,.2],[1175,.2],[1047,.2],[1175,.4],
+      [880,.2],[1047,.2],[1175,.2],[1047,.2],[880,.2],[784,.2],[1047,.6]
+    ];
+    var t=0,total=0;
+    mel.forEach(function(n){
+      // bright bell/xylophone tone: triangle + quick decay
+      var o=c.createOscillator(),g=c.createGain();
+      o.type='triangle';o.frequency.value=n[0];
+      g.gain.setValueAtTime(0,now+t);
+      g.gain.linearRampToValueAtTime(.07,now+t+.008);
+      g.gain.exponentialRampToValueAtTime(.001,now+t+n[1]*1.2);
+      o.connect(g);g.connect(c.destination);
+      o.start(now+t);o.stop(now+t+n[1]*1.2+.05);
+      // shimmer overtone
+      var o2=c.createOscillator(),g2=c.createGain();
+      o2.type='sine';o2.frequency.value=n[0]*3;
+      g2.gain.setValueAtTime(0,now+t);
+      g2.gain.linearRampToValueAtTime(.015,now+t+.005);
+      g2.gain.exponentialRampToValueAtTime(.001,now+t+n[1]*.5);
+      o2.connect(g2);g2.connect(c.destination);
+      o2.start(now+t);o2.stop(now+t+n[1]+.02);
+      t+=n[1];
+    });
+    total=t;
+    // bouncy bass notes
+    var bass=[[262,.4],[330,.4],[392,.4],[330,.4],[294,.4],[262,.4],[330,.4],[262,.8]];
+    var bt=0;
+    bass.forEach(function(n){
+      var o=c.createOscillator(),g=c.createGain(),f=c.createBiquadFilter();
+      o.type='sine';o.frequency.value=n[0];
+      f.type='lowpass';f.frequency.value=400;
+      g.gain.setValueAtTime(0,now+bt);
+      g.gain.linearRampToValueAtTime(.055,now+bt+.02);
+      g.gain.setValueAtTime(.055,now+bt+n[1]*.7);
+      g.gain.linearRampToValueAtTime(0,now+bt+n[1]);
+      o.connect(f);f.connect(g);g.connect(c.destination);
+      o.start(now+bt);o.stop(now+bt+n[1]+.02);
+      bt+=n[1];
+    });
+    // simple kick + clap rhythm
+    var step=.2,nb=Math.floor(total/step);
+    for(var bi=0;bi<nb;bi++){
+      var btime=now+bi*step;
+      if(bi%4===0){// kick
+        var ko=c.createOscillator(),kg=c.createGain();
+        ko.type='sine';ko.frequency.setValueAtTime(110,btime);ko.frequency.exponentialRampToValueAtTime(40,btime+.1);
+        kg.gain.setValueAtTime(0,btime);kg.gain.linearRampToValueAtTime(.12,btime+.005);kg.gain.exponentialRampToValueAtTime(.001,btime+.14);
+        ko.connect(kg);kg.connect(c.destination);ko.start(btime);ko.stop(btime+.16);
+      }
+      if(bi%4===2){// clap
+        var so=c.createOscillator(),sg=c.createGain();
+        so.type='square';so.frequency.value=300+Math.random()*100;
+        sg.gain.setValueAtTime(0,btime);sg.gain.linearRampToValueAtTime(.04,btime+.004);sg.gain.exponentialRampToValueAtTime(.001,btime+.06);
+        so.connect(sg);sg.connect(c.destination);so.start(btime);so.stop(btime+.07);
+      }
+    }
+    musicTO=setTimeout(function(){if(musicOn)playMusic();},(total+.1)*1000);
+  }catch(e){}
+}
+function stopMusic(){if(musicTO){clearTimeout(musicTO);musicTO=null;}}
+function toggleMusic(){try{getAC().resume();}catch(e){}musicOn=!musicOn;var b=document.getElementById('mbtn');if(musicOn){b.textContent='🎵';b.classList.remove('off');playMusic();}else{b.textContent='🔇';b.classList.add('off');stopMusic();}}
+var voiceArr=[];
+function loadVoices(){voiceArr=window.speechSynthesis?window.speechSynthesis.getVoices():[];}
+if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=loadVoices;loadVoices();}
+function bestV(lang){if(!voiceArr.length)voiceArr=window.speechSynthesis?window.speechSynthesis.getVoices():[];if(lang==='zh'){var zv=voiceArr.find(function(v){return v.lang&&v.lang.indexOf('zh')>=0;});if(zv)return zv;}var p=['Samantha','Karen','Moira','Tessa','Allison','Ava','Google UK English Female','Google US English'];for(var pi=0;pi<p.length;pi++){var fv=voiceArr.find(function(v){return v.name.indexOf(p[pi])>=0;});if(fv)return fv;}return voiceArr[0]||null;}
+function sayEN(txt){if(!window.speechSynthesis)return;try{window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(txt);u.rate=.82;u.pitch=1.15;u.volume=1;var v=bestV('en');if(v)u.voice=v;window.speechSynthesis.speak(u);}catch(e){}}
+function sayBoth(en,cn,delay){delay=delay||0;setTimeout(function(){if(!window.speechSynthesis)return;try{window.speechSynthesis.cancel();var u1=new SpeechSynthesisUtterance(en);u1.rate=.82;u1.pitch=1.15;var ve=bestV('en');if(ve)u1.voice=ve;var u2=new SpeechSynthesisUtterance(cn);u2.rate=.88;u2.pitch=1.25;var vc=bestV('zh');if(vc)u2.voice=vc;window.speechSynthesis.speak(u1);window.speechSynthesis.speak(u2);}catch(e){}},delay);}
+// Build scene — stars + vehicles only (buildings now SVG)
+(function(){var sl=document.getElementById('starlayer');for(var si=0;si<180;si++){var ss=document.createElement('div');ss.className='star';var sz=Math.random()*2.4+.3;ss.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*65+'%;left:'+Math.random()*100+'%;--o:'+(0.2+Math.random()*.8)+';--t:'+(1.5+Math.random()*5)+'s;--d:'+Math.random()*6+'s';sl.appendChild(ss);}})();
+(function(){var lane=document.getElementById('streetlane');if(!lane)return;[{e:'🚕',s:'3.4rem',t:9,d:0,b:6},{e:'🚕',s:'3.4rem',t:13,d:-5,b:28},{e:'🚕',s:'3.4rem',t:11,d:-10,b:6},{e:'🚖',s:'3.2rem',t:17,d:-14,b:8},{e:'🚕',s:'3.4rem',t:8,d:-20,b:28},{e:'🚓',s:'3rem',t:14,d:-7,b:10,g:'drop-shadow(0 0 8px rgba(0,60,255,.7))'},{e:'🚌',s:'3rem',t:20,d:-18,b:8},{e:'🚑',s:'2.8rem',t:25,d:-22,b:28,g:'drop-shadow(0 0 8px rgba(255,60,60,.6))'}].forEach(function(v){var el=document.createElement('div');el.className='vehicle';el.textContent=v.e;el.style.cssText='font-size:'+v.s+';--vt:'+v.t+'s;--vd:'+v.d+'s;bottom:'+v.b+'px;'+(v.g?'filter:scaleX(-1) '+v.g+';':'');lane.appendChild(el);});})();
+// Players — separate score banks per game so BOTH show on home
+var PC=[{emoji:'🔴',col:'#FF3860',bg:'rgba(255,56,96,.12)'},{emoji:'🔵',col:'#00D4FF',bg:'rgba(0,212,255,.12)'},{emoji:'🟢',col:'#3DFF4F',bg:'rgba(61,255,79,.1)'},{emoji:'🟣',col:'#E040FB',bg:'rgba(224,64,251,.1)'}];
+var PLAYERS=[
+  {name:'Player 1',on:true, math:{score:0,correct:0,wrong:0,time:0,startTime:0},alpha:{score:0,correct:0,wrong:0,time:0,startTime:0}},
+  {name:'Player 2',on:true, math:{score:0,correct:0,wrong:0,time:0,startTime:0},alpha:{score:0,correct:0,wrong:0,time:0,startTime:0}},
+  {name:'Player 3',on:false,math:{score:0,correct:0,wrong:0,time:0,startTime:0},alpha:{score:0,correct:0,wrong:0,time:0,startTime:0}},
+  {name:'Player 4',on:false,math:{score:0,correct:0,wrong:0,time:0,startTime:0},alpha:{score:0,correct:0,wrong:0,time:0,startTime:0}},
+];
+function actP(){return PLAYERS.filter(function(p){return p.on;});}
+function resetGame(gk){PLAYERS.forEach(function(p){p[gk]={score:0,correct:0,wrong:0,time:0,startTime:Date.now()};});}
+
+// Simple elapsed clock — counts UP, no expiry
+var gameClock=null,gameClockSecs=0,clockDisplayId=null;
+function startClock(displayId){
+  stopClock();
+  gameClockSecs=0;clockDisplayId=displayId;
+  updClock();
+  gameClock=setInterval(function(){gameClockSecs++;updClock();},1000);
+}
+function stopClock(){if(gameClock){clearInterval(gameClock);gameClock=null;}}
+function updClock(){
+  if(!clockDisplayId)return;
+  var el=document.getElementById(clockDisplayId);if(!el)return;
+  var m=Math.floor(gameClockSecs/60),s=gameClockSecs%60;
+  el.textContent='⏱ '+(m>0?m+':'+(s<10?'0':'')+s:s+'s');
+}
+function stopQTimer(){} // kept so existing calls don't crash
+
+function buildSetup(){var sl=document.getElementById('pslots');sl.innerHTML='';PLAYERS.forEach(function(p,i){var row=document.createElement('div');row.className='prow';var num=document.createElement('div');num.className='pnum';num.textContent=PC[i].emoji;var inp=document.createElement('input');inp.className='pinp';inp.type='text';inp.placeholder='Player '+(i+1)+' name...';if(p.name!=='Player '+(i+1))inp.value=p.name;inp.style.borderColor=p.on?PC[i].col:'rgba(255,255,255,.14)';(function(idx){inp.addEventListener('input',function(){PLAYERS[idx].name=this.value||'Player '+(idx+1);});})(i);var tog=document.createElement('button');tog.className='ptog '+(p.on?'on':'off');tog.textContent=p.on?'ON':'OFF';(function(idx,tg,ip){tg.addEventListener('click',function(){sfxClick();PLAYERS[idx].on=!PLAYERS[idx].on;tg.className='ptog '+(PLAYERS[idx].on?'on':'off');tg.textContent=PLAYERS[idx].on?'ON':'OFF';ip.style.borderColor=PLAYERS[idx].on?PC[idx].col:'rgba(255,255,255,.14)';});})(i,tog,inp);row.appendChild(num);row.appendChild(inp);row.appendChild(tog);sl.appendChild(row);});}
+
+function buildSB(id,ai,gk){var sb=document.getElementById(id);if(!sb)return;sb.innerHTML='<div class="sb-hd">🏆 SCOREBOARD 积分榜</div>';var row=document.createElement('div');row.className='sb-row';actP().forEach(function(p,i){var pi=PLAYERS.indexOf(p);var g=p[gk];var d=document.createElement('div');d.className='sbp'+(i===ai?' now':'');d.style.cssText='--spc:'+PC[pi].col+';--spb:'+PC[pi].bg;d.innerHTML='<div class="sbn">'+PC[pi].emoji+' '+(p.name||'P'+(pi+1))+'</div><div class="sbs">'+g.score+'</div><div class="sbd">✅'+g.correct+' ❌'+g.wrong+'</div>';row.appendChild(d);});sb.appendChild(row);}
+function setTurn(id,idx){var ap=actP();var p=ap[idx%ap.length];if(!p)return;var pi=PLAYERS.indexOf(p);var el=document.getElementById(id);el.style.setProperty('--tc',PC[pi].col);el.style.setProperty('--tb',PC[pi].bg);el.style.setProperty('--tg',PC[pi].col+'55');el.textContent=PC[pi].emoji+' '+(p.name||'Player '+(pi+1))+'\'s Turn! 轮到你了！';}
+var BOK=['Amazing!','Brilliant!','Perfect!','Superstar! 🗽','You got it!','Incredible!'];
+var BOKCN=['太棒了！','聪明极了！','完美！','超级巨星！🗽','答对了！','不可思议！'];
+var BNO=['Try again!','Almost there!','Oops!','Not quite!'];
+var BNOCN=['再试一次！','差一点！','继续加油！','再想想！'];
+function showScr(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
+var cTO=null,aTO=null;
+function goHome(){sfxClick();stopClock();clearTimeout(cTO);clearTimeout(aTO);if(window.speechSynthesis)window.speechSynthesis.cancel();document.getElementById('lbscr').classList.remove('show');showScr('home-screen');buildHomeSB();}
+function doCD(cb){var ov=document.getElementById('cdov'),nm=document.getElementById('cdnum');ov.classList.add('show');var c=3;function tick(){nm.className='cdnum';void nm.offsetWidth;if(c>0){nm.textContent=c;sfxCD();nm.className='cdnum cdanim';c--;setTimeout(tick,900);}else{nm.textContent='GO! 🗽';sfxCD();nm.className='cdnum cdanim';setTimeout(function(){ov.classList.remove('show');cb();},760);}}tick();}
+function showFB(msg,isOk){var ov=document.getElementById('fbov'),fm=document.getElementById('fbmsg');fm.textContent=msg;fm.className='fbmsg '+(isOk?'ok':'no');ov.classList.add('show');setTimeout(function(){ov.classList.remove('show');},1100);}
+function burst(){var em=['🚕','⭐','🌟','✨','🗽','🏙️','🌭','🎉','💛','🎷'];for(var bi=0;bi<20;bi++){var el=document.createElement('div');el.className='pstar';el.textContent=em[Math.floor(Math.random()*em.length)];var ang=Math.random()*360,dist=90+Math.random()*160;el.style.cssText='left:50%;top:45%;--px:'+Math.cos(ang*Math.PI/180)*dist+'px;--py:'+Math.sin(ang*Math.PI/180)*dist+'px;--pr:'+Math.random()*360+'deg;--pd:'+(0.5+Math.random()*.9)+'s;--pdd:'+Math.random()*.15+'s';document.body.appendChild(el);setTimeout(function(){el.remove();},1700);}}
+function fmtTime(sec){var m=Math.floor(sec/60),s=sec%60;return m>0?m+'m '+s+'s':s+'s';}
+
+function showLB(title,sub,gk,againFn){
+  sfxWin();burst();
+  var sorted=actP().slice().sort(function(a,b){return b[gk].score-a[gk].score;});
+  var medals=['🥇','🥈','🥉','🏅'];
+  document.getElementById('lb-icon').textContent=medals[0];
+  document.getElementById('lb-title').textContent=title;
+  document.getElementById('lb-sub').textContent=sub;
+  var rows=document.getElementById('lb-rows');rows.innerHTML='';
+  sorted.forEach(function(p,rank){
+    var pi=PLAYERS.indexOf(p);var g=p[gk];
+    var r=document.createElement('div');r.className='lb-row';r.style.cssText='--lc:'+PC[pi].col+';--lb:'+PC[pi].bg;
+    r.innerHTML='<div class="lb-medal">'+medals[rank]+'</div><div class="lb-name">'+PC[pi].emoji+' '+(p.name||'P'+(pi+1))+'</div>'+
+      '<div style="text-align:right"><div class="lb-score">'+g.score+'</div>'+
+      '<div class="lb-det">✅'+g.correct+' ❌'+g.wrong+' ⏱'+fmtTime(g.time)+'</div></div>';
+    rows.appendChild(r);
+  });
+  document.getElementById('lb-again').onclick=againFn;
+  document.getElementById('lbscr').classList.add('show');
+  buildHomeSB();
+  var w=sorted[0];var wi=PLAYERS.indexOf(w);
+  sayBoth((w.name||'Player '+(wi+1))+' wins with '+w[gk].score+' points!','恭喜'+(w.name||'玩家')+'赢了'+w[gk].score+'分！太棒了！',400);
+  for(var fi=0;fi<5;fi++)(function(d){setTimeout(burst,d*280);})(fi);
+}
+
+// HOME SCOREBOARD — math AND alphabet side by side
+function buildHomeSB(){
+  var ap=actP();
+  var wrap=document.getElementById('home-sb-wrap');
+  var rows=document.getElementById('home-sb-rows');
+  if(!wrap||!rows)return;
+  var hasMath=ap.some(function(p){return p.math.score>0;});
+  var hasAlpha=ap.some(function(p){return p.alpha.score>0;});
+  wrap.style.display=(hasMath||hasAlpha)?'block':'none';
+  if(!hasMath&&!hasAlpha)return;
+  rows.innerHTML='';
+  var games=[];
+  if(hasMath)games.push({k:'math',label:'🚕 Math 数学'});
+  if(hasAlpha)games.push({k:'alpha',label:'🔤 Alphabet 字母'});
+  games.forEach(function(gm){
+    var sec=document.createElement('div');sec.style.cssText='flex:1;min-width:130px;';
+    var head=document.createElement('div');head.style.cssText='font-family:"Fredoka One",cursive;font-size:.68rem;color:rgba(255,224,51,.7);letter-spacing:1px;text-align:center;margin-bottom:6px;';
+    head.textContent=gm.label;sec.appendChild(head);
+    var sorted=ap.slice().sort(function(a,b){return b[gm.k].score-a[gm.k].score;});
+    var medals=['🥇','🥈','🥉','🏅'];
+    sorted.forEach(function(p,rank){
+      var pi=PLAYERS.indexOf(p);var g=p[gm.k];
+      var d=document.createElement('div');
+      d.style.cssText='display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:10px;border:1.5px solid '+PC[pi].col+';background:'+PC[pi].bg+';margin-bottom:5px;';
+      d.innerHTML='<span style="font-size:.95rem">'+medals[rank]+'</span>'+
+        '<span style="font-family:\'Fredoka One\',cursive;font-size:.7rem;color:'+PC[pi].col+';flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+PC[pi].emoji+' '+(p.name||'P'+(pi+1))+'</span>'+
+        '<div style="text-align:right">'+
+          '<div style="font-family:\'Fredoka One\',cursive;font-size:1.1rem;color:white;line-height:1">'+g.score+'</div>'+
+          '<div style="font-size:.5rem;color:rgba(255,255,255,.38)">✅'+g.correct+' ⏱'+(g.time>0?fmtTime(g.time):'—')+'</div>'+
+        '</div>';
+      sec.appendChild(d);
+    });
+    rows.appendChild(sec);
+  });
+}
+
+// MATH GAME
+var CITEMS=[{e:'🚕',name:'taxi',cn:'出租车',col:'#FFE033'},{e:'🌭',name:'hot dog',cn:'热狗',col:'#FF9800'},{e:'🏙️',name:'skyscraper',cn:'摩天大楼',col:'#00D4FF'},{e:'🍕',name:'pizza',cn:'披萨',col:'#FF6B35'},{e:'🎷',name:'saxophone',cn:'萨克斯',col:'#FFD700'},{e:'🗽',name:'statue',cn:'雕像',col:'#3DFF4F'},{e:'🏀',name:'basketball',cn:'篮球',col:'#FF8C00'},{e:'⭐',name:'star',cn:'星星',col:'#FFEE44'}];
+var CS={turn:0,qNum:0,totalQ:0,busy:false};
+function makeQuestion(){var isAdd=(Math.random()>.5);if(isAdd){var a=Math.floor(Math.random()*5)+1,b=Math.floor(Math.random()*5)+1,o=CITEMS[Math.floor(Math.random()*CITEMS.length)];return{type:'add',a:a,b:b,ans:a+b,obj:o};}else{var o2=CITEMS[Math.floor(Math.random()*CITEMS.length)],cnt=Math.floor(Math.random()*8)+1;return{type:'count',cnt:cnt,obj:o2};}}
+function startCount(){sfxClick();if(actP().length===0){sayEN('Please activate at least one player!');return;}resetGame('math');CS={turn:0,qNum:0,totalQ:actP().length*8,busy:false};showScr('count-screen');try{getAC().resume();if(musicOn&&!musicTO)playMusic();}catch(e){}buildSB('csb',0,'math');setTurn('cturn',0);startClock('c-clock');doCD(nextCQ);sayBoth('NYC Math! Count and add!','纽约数学！数数和加法！');}
+function nextCQ(){
+  clearTimeout(cTO);
+  if(CS.qNum>=CS.totalQ){
+    stopClock();
+    actP().forEach(function(p){p.math.time=gameClockSecs;});
+    showLB('NYC Math Done! 🗽','Who is the math star?','math',function(){document.getElementById('lbscr').classList.remove('show');startCount();});return;
+  }
+  CS.busy=false;var ap=actP();var ti=CS.turn%ap.length;
+  buildSB('csb',ti,'math');setTurn('cturn',ti);
+  var q=makeQuestion();document.getElementById('cprog').style.width=(CS.qNum/CS.totalQ*100)+'%';
+  var stage=document.getElementById('cstage');stage.innerHTML='';var answer;
+  if(q.type==='count'){
+    for(var ei=0;ei<q.cnt;ei++){var em=document.createElement('span');em.className='sitem';em.textContent=q.obj.e;em.style.setProperty('--id',ei*.1+'s');stage.appendChild(em);}
+    document.getElementById('cqtxt').innerHTML='<span style="color:'+q.obj.col+'">How many '+q.obj.e+' '+q.obj.name+'s?</span>';
+    document.getElementById('cqcn').textContent='数一数，几个'+q.obj.cn+'？';answer=q.cnt;
+    sayBoth('How many '+q.obj.name+'s?','数一数，几个'+q.obj.cn+'？',500);
+  } else {
+    for(var ai2=0;ai2<q.a;ai2++){var em2=document.createElement('span');em2.className='sitem';em2.textContent=q.obj.e;em2.style.setProperty('--id',ai2*.08+'s');stage.appendChild(em2);}
+    var pl=document.createElement('span');pl.style.cssText='font-family:"Fredoka One",cursive;font-size:2.6rem;color:var(--taxi);align-self:center;padding:0 4px;';pl.textContent='+';stage.appendChild(pl);
+    for(var bi2=0;bi2<q.b;bi2++){var em3=document.createElement('span');em3.className='sitem';em3.textContent=q.obj.e;em3.style.setProperty('--id',(q.a+bi2)*.08+'s');stage.appendChild(em3);}
+    document.getElementById('cqtxt').innerHTML='<span style="color:'+q.obj.col+'">'+q.a+' '+q.obj.e+' + '+q.b+' '+q.obj.e+' = ?</span>';
+    document.getElementById('cqcn').textContent=q.a+'个加'+q.b+'个，一共几个？';answer=q.ans;
+    sayBoth(q.a+' plus '+q.b+' equals?',q.a+'加'+q.b+'等于几？',500);
+  }
+  var cset=new Set([answer]);var ct2=0;while(cset.size<4&&ct2<60){ct2++;var cv=answer+Math.floor(Math.random()*5)-2;if(cv>0&&cv<=15)cset.add(cv);}while(cset.size<4)cset.add(cset.size+1);
+  var carr=Array.from(cset).sort(function(){return Math.random()-.5;});
+  var cc=document.getElementById('cchoices');cc.innerHTML='';
+  carr.forEach(function(num){var btn=document.createElement('button');btn.className='cbtn';btn.innerHTML='<span class="cbtn-big">'+num+'</span>';(function(n){btn.addEventListener('click',function(){if(CS.busy)return;CS.busy=true;try{getAC().resume();}catch(e){}document.querySelectorAll('#cchoices .cbtn').forEach(function(b){b.disabled=true;});var isOK=(n===answer);btn.classList.add(isOK?'correct':'wrong');if(!isOK)document.querySelectorAll('#cchoices .cbtn').forEach(function(b){if(parseInt(b.querySelector('.cbtn-big').textContent)===answer)b.classList.add('correct');});var cp=ap[ti];if(isOK){sfxOK();cp.math.score+=10;cp.math.correct++;if(cp.math.correct%3===0)sfxStreak();burst();var ri=Math.floor(Math.random()*BOK.length);showFB(BOK[ri]+' +10 🚕',true);document.getElementById('cbubble').textContent=BOK[ri]+'! '+BOKCN[ri];sayBoth(BOK[ri]+'!',BOKCN[ri]+'！',150);}else{sfxNo();cp.math.wrong++;var ni=Math.floor(Math.random()*BNO.length);showFB(BNO[ni],false);document.getElementById('cbubble').textContent=BNO[ni]+' '+BNOCN[ni];sayBoth('The answer is '+answer+'!','答案是'+answer+'！',150);}buildSB('csb',ti,'math');CS.qNum++;CS.turn++;cTO=setTimeout(nextCQ,2500);});})(num);cc.appendChild(btn);});
+}
+
+// ALPHABET GAME
+var LETTERS=[{l:'A',word:'Apple',e:'🍎',sound:'Ay',cn:'苹果'},{l:'B',word:'Bagel',e:'🥯',sound:'Bee',cn:'百吉饼'},{l:'C',word:'Cab',e:'🚕',sound:'See',cn:'出租车'},{l:'D',word:'Dog',e:'🐕',sound:'Dee',cn:'狗'},{l:'E',word:'Empire State',e:'🏙️',sound:'Ee',cn:'帝国大厦'},{l:'F',word:'Fire truck',e:'🚒',sound:'Eff',cn:'消防车'},{l:'G',word:'Garbage truck',e:'🚛',sound:'Jee',cn:'垃圾车'},{l:'H',word:'Hot dog',e:'🌭',sound:'Aitch',cn:'热狗'},{l:'I',word:'Ice cream',e:'🍦',sound:'Eye',cn:'冰淇淋'},{l:'J',word:'Jazz',e:'🎷',sound:'Jay',cn:'爵士乐'},{l:'K',word:'Ketchup',e:'🍅',sound:'Kay',cn:'番茄酱'},{l:'L',word:'Liberty',e:'🗽',sound:'El',cn:'自由女神'},{l:'M',word:'Manhattan',e:'🌆',sound:'Em',cn:'曼哈顿'},{l:'N',word:'New York',e:'🗽',sound:'En',cn:'纽约'},{l:'O',word:'Orange juice',e:'🍊',sound:'Oh',cn:'橙汁'},{l:'P',word:'Pizza',e:'🍕',sound:'Pee',cn:'披萨'},{l:'Q',word:'Queen',e:'👑',sound:'Cue',cn:'女王'},{l:'R',word:'Rocket',e:'🚀',sound:'Are',cn:'火箭'},{l:'S',word:'Subway',e:'🚇',sound:'Ess',cn:'地铁'},{l:'T',word:'Taxi',e:'🚕',sound:'Tee',cn:'出租车'},{l:'U',word:'Umbrella',e:'☂️',sound:'You',cn:'雨伞'},{l:'V',word:'Van',e:'🚐',sound:'Vee',cn:'面包车'},{l:'W',word:'Wall Street',e:'💵',sound:'Double-you',cn:'华尔街'},{l:'X',word:'Xylophone',e:'🎵',sound:'Ex',cn:'木琴'},{l:'Y',word:'Yellow cab',e:'🚕',sound:'Why',cn:'黄色出租车'},{l:'Z',word:'Zoo',e:'🦒',sound:'Zee',cn:'动物园'}];
+var AS={turn:0,qNum:0,totalQ:0,busy:false,curLetter:null};
+function startAlpha(){sfxClick();if(actP().length===0){sayEN('Please activate at least one player!');return;}resetGame('alpha');AS={turn:0,qNum:0,totalQ:actP().length*8,busy:false,curLetter:null};showScr('alpha-screen');try{getAC().resume();if(musicOn&&!musicTO)playMusic();}catch(e){}buildSB('asb',0,'alpha');setTurn('aturn',0);startClock('a-clock');doCD(nextAQ);sayBoth('NYC Alphabet! Find the right letter!','纽约字母游戏！找到正确的字母！');}
+function nextAQ(){
+  clearTimeout(aTO);
+  if(AS.qNum>=AS.totalQ){
+    stopClock();
+    actP().forEach(function(p){p.alpha.time=gameClockSecs;});
+    showLB('Alphabet Done! 🔤','Amazing learning, NYC style!','alpha',function(){document.getElementById('lbscr').classList.remove('show');startAlpha();});return;
+  }
+  AS.busy=false;var ap=actP();var ti=AS.turn%ap.length;
+  buildSB('asb',ti,'alpha');setTurn('aturn',ti);
+  var letter=LETTERS[Math.floor(Math.random()*LETTERS.length)];AS.curLetter=letter;
+  document.getElementById('aprog').style.width=(AS.qNum/AS.totalQ*100)+'%';
+  var mode=AS.qNum%3;var ld=document.getElementById('aldisp');ld.innerHTML='';
+  if(mode===0){ld.innerHTML='<span class="word-emoji">'+letter.e+'</span><div class="word-txt"><span class="word-hl" style="color:var(--taxi)">'+letter.word.charAt(0)+'</span>'+letter.word.slice(1)+'</div><div class="word-cn">'+letter.cn+'</div><div class="mode-hint">Which letter starts this word?<br>以什么字母开头？</div>';}
+  else if(mode===1){ld.innerHTML='<span class="bigltr" style="color:var(--taxi)">'+letter.l+'</span><div class="mode-hint">Find the <b style="color:var(--nb)">lowercase</b>! 找小写！</div><div class="word-cn" style="margin-top:4px">'+letter.e+' '+letter.word+' · '+letter.cn+'</div>';}
+  else{ld.innerHTML='<span class="bigltr" style="color:var(--nb);text-shadow:0 0 30px rgba(0,212,255,.6)">'+letter.l.toLowerCase()+'</span><div class="mode-hint">Find the <b style="color:var(--taxi)">CAPITAL</b>! 找大写！</div><div class="word-cn" style="margin-top:4px">'+letter.e+' '+letter.word+' · '+letter.cn+'</div>';}
+  var pool=LETTERS.filter(function(lt){return lt.l!==letter.l;}).sort(function(){return Math.random()-.5;}).slice(0,3);pool.push(letter);pool=pool.sort(function(){return Math.random()-.5;});
+  var ac=document.getElementById('achoices');ac.innerHTML='';
+  pool.forEach(function(ch){
+    var btn=document.createElement('button');btn.className='cbtn';
+    var disp=mode===1?ch.l.toLowerCase():ch.l;
+    btn.innerHTML='<span class="cbtn-big">'+disp+'</span><div class="cbtn-sm">'+ch.word+'</div>';
+    (function(choice){btn.addEventListener('click',function(){
+      if(AS.busy)return;
+      AS.busy=true;
+      try{getAC().resume();}catch(e){}
+      document.querySelectorAll('#achoices .cbtn').forEach(function(b){b.disabled=true;});
+      var isOK=(choice.l===letter.l);
+      btn.classList.add(isOK?'correct':'wrong');
+      if(!isOK){
+        var cd=mode===1?letter.l.toLowerCase():letter.l;
+        document.querySelectorAll('#achoices .cbtn').forEach(function(b){
+          var sp=b.querySelector('.cbtn-big');
+          if(sp&&sp.textContent.trim()===cd)b.classList.add('correct');
+        });
+      }
+      var cp=ap[ti];
+      if(isOK){
+        sfxOK();cp.alpha.score+=10;cp.alpha.correct++;
+        if(cp.alpha.correct%3===0)sfxStreak();
+        burst();
+        var ri=Math.floor(Math.random()*BOK.length);
+        showFB(BOK[ri]+' +10',true);
+        document.getElementById('ababble').textContent=BOK[ri]+'! '+BOKCN[ri];
+        sayBoth(letter.l+'! '+letter.sound+'! As in '+letter.word+'!','字母'+letter.l+'！'+letter.cn+'！',150);
+      } else {
+        sfxNo();cp.alpha.wrong++;
+        var ni=Math.floor(Math.random()*BNO.length);
+        showFB(BNO[ni],false);
+        document.getElementById('ababble').textContent=BNO[ni]+' '+BNOCN[ni];
+        sayBoth('The answer is '+letter.l+'! '+letter.sound+'! '+letter.word,'答案是字母'+letter.l+'！'+letter.cn+'！',150);
+      }
+      buildSB('asb',ti,'alpha');
+      AS.qNum++;AS.turn++;
+      aTO=setTimeout(nextAQ,2500);
+    });})(ch);
+    ac.appendChild(btn);
+  });
+  setTimeout(function(){
+    if(mode===0)sayBoth(letter.word+'. What letter does it start with?',letter.cn+'，以什么字母开头？');
+    else if(mode===1)sayBoth('Capital '+letter.l+'! Find the lowercase!','大写'+letter.l+'！找到小写字母！');
+    else sayBoth('Lowercase '+letter.l.toLowerCase()+'! Find the capital!','小写'+letter.l.toLowerCase()+'！找到大写字母！');
+  },600);
+}
+function hearLetter(){var lt=AS.curLetter;if(!lt)return;var b=document.getElementById('hearbtn');b.classList.add('on');b.textContent='🔊 Playing...';sayBoth(lt.l+'! '+lt.sound+'! As in '+lt.word+'!','字母'+lt.l+'！'+lt.cn+'！');setTimeout(function(){b.classList.remove('on');b.textContent='🔊 Hear it! 听一听！';},2200);}
+buildSetup();
+document.addEventListener('click',function once(){try{getAC().resume();if(musicOn&&!musicTO)playMusic();}catch(e){}document.removeEventListener('click',once);},{once:true});
+</script>
+</body>
+</html>
